@@ -5,7 +5,7 @@ const app = express();
 app.use(express.json());
 
 // 대시보드 HTML 파일 서빙 (dashboard 폴더)
-app.use(express.static(path.join(__dirname, '../dashboard')));
+app.use(express.static(path.join(__dirname, 'public')));
 
 // CORS 허용 (앱에서 보내는 요청 받기 위해)
 app.use((req, res, next) => {
