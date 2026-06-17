@@ -1,0 +1,10 @@
+# VSCode 민감 설정
+.vscode/launch.json
+
+# Java/Gradle 빌드 산물
+server/build/
+server/.gradle/
+
+# OS 관련
+.DS_Store
+Thumbs.db

@@ -1,0 +1,18 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "java",
+      "name": "Spring Boot-ServerApplication",
+      "request": "launch",
+      "mainClass": "com.seniormonitor.server.ServerApplication",
+      "projectName": "server",
+      "env": {
+        "DB_URL": "여기에 본인 Railway DB 접속 URL 입력",
+        "DB_USERNAME": "postgres",
+        "DB_PASSWORD": "여기에 본인 Railway DB 비밀번호 입력",
+        "PORT": "8080"
+      }
+    }
+  ]
+}
