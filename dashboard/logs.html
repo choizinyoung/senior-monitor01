@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>로그 시스템 - 독거노인 안전 관리 시스템</title>
+    <link rel="stylesheet" href="common.css">
+</head>
+<body>
+    <nav class="sidebar">
+        <div class="sidebar-header">
+            <h1>독거노인 안전<br>관리 시스템</h1>
+            <p>Senior Safety Monitoring</p>
+        </div>
+        <div class="sidebar-nav">
+            <div class="nav-group">
+                <div class="nav-group-label">메인</div>
+                <a class="nav-item" href="index.html"><span class="icon"><svg width="20" height="20" fill="none" stroke="white" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="4" rx="1"/><rect x="14" y="10" width="7" height="11" rx="1"/><rect x="3" y="13" width="7" height="8" rx="1"/></svg></span> 통합 대시보드</a>
+                <a class="nav-item" href="alert-list.html"><span class="icon"><svg width="20" height="20" fill="none" stroke="white" stroke-width="2" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></span> 확인요망 리스트<span class="badge">5</span></a>
+            </div>
+            <div class="nav-group">
+                <div class="nav-group-label">관리</div>
+                <a class="nav-item" href="seniors.html"><span class="icon"><svg width="20" height="20" fill="none" stroke="white" stroke-width="2" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span> 대상자 관리</a>
+                <a class="nav-item" href="history.html"><span class="icon"><svg width="20" height="20" fill="none" stroke="white" stroke-width="2" viewBox="0 0 24 24"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/><line x1="8" y1="10" x2="16" y2="10"/><line x1="8" y1="14" x2="16" y2="14"/><line x1="8" y1="18" x2="12" y2="18"/></svg></span> 처리 내역 조회</a>
+                <a class="nav-item" href="monitoring.html"><span class="icon"><svg width="20" height="20" fill="none" stroke="white" stroke-width="2" viewBox="0 0 24 24"><path d="M2 12C2 6.5 6.5 2 12 2a10 10 0 0 1 8 4"/><path d="M5 12a7 7 0 0 1 7-7 7 7 0 0 1 5.7 3"/><circle cx="12" cy="12" r="2" fill="white"/><line x1="12" y1="14" x2="12" y2="22"/></svg></span> 모니터링 현황</a>
+            </div>
+            <div class="nav-group">
+                <div class="nav-group-label">시스템</div>
+                <a class="nav-item active" href="logs.html"><span class="icon"><svg width="20" height="20" fill="none" stroke="white" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="16" y2="17"/></svg></span> 로그 시스템</a>
+                <a class="nav-item" href="settings.html"><span class="icon"><svg width="20" height="20" fill="none" stroke="white" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></span> 설정</a>
+            </div>
+        </div>
+        <div class="sidebar-footer">
+            <div class="avatar">관</div>
+            <div class="user-info">
+                <div class="name">김관리자</div>
+                <div class="role">관리자 · 전체 권한</div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="main">
+        <div class="topbar">
+            <div class="topbar-title"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg> 로그 시스템</div>
+            <div class="topbar-right">
+                <span class="demo-badge">디자인만 적용</span>
+                <div class="topbar-user"><div class="avatar">김</div> 김관리자</div>
+            </div>
+        </div>
+        <div class="content">
+            <div class="section-card">
+                <div class="section-header">
+                    <h2>시스템 활동 로그</h2>
+                    <button class="btn btn-outline" onclick="alert('로그 상세 보기\n\n(디자인만 적용 — 실제 기능 미구현)')">상세 보기</button>
+                </div>
+                <div class="filter-tabs">
+                    <span class="tab active">전체 로그</span>
+                    <span class="tab">조회 로그</span>
+                    <span class="tab">처리 로그</span>
+                    <span class="tab">시스템 로그</span>
+                    <span class="tab">로그인 로그</span>
+                </div>
+                <div class="log-list">
+                    <div class="log-item">
+                        <span class="log-time">2026-06-11 09:45:12</span>
+                        <span class="log-type query">조회</span>
+                        <span class="log-user">김관리자</span>
+                        <span class="log-message">확인요망 리스트 조회 — 필터: 전체</span>
+                    </div>
+                    <div class="log-item">
+                        <span class="log-time">2026-06-11 09:43:08</span>
+                        <span class="log-type action">처리</span>
+                        <span class="log-user">김관리자</span>
+                        <span class="log-message">대상자 '이순자' 확인완료 처리</span>
+                    </div>
+                    <div class="log-item">
+                        <span class="log-time">2026-06-11 09:40:55</span>
+                        <span class="log-type system">시스템</span>
+                        <span class="log-user">시스템</span>
+                        <span class="log-message">확인요망 자동 등록: 김영희 (기상 신호 미수신)</span>
+                    </div>
+                    <div class="log-item">
+                        <span class="log-time">2026-06-11 09:38:22</span>
+                        <span class="log-type query">조회</span>
+                        <span class="log-user">김관리자</span>
+                        <span class="log-message">대상자 상세 조회 — ID: 1023 (김영희)</span>
+                    </div>
+                    <div class="log-item">
+                        <span class="log-time">2026-06-11 09:35:10</span>
+                        <span class="log-type login">로그인</span>
+                        <span class="log-user">김관리자</span>
+                        <span class="log-message">시스템 로그인 성공</span>
+                    </div>
+                    <div class="log-item">
+                        <span class="log-time">2026-06-11 05:00:00</span>
+                        <span class="log-type system">시스템</span>
+                        <span class="log-user">시스템</span>
+                        <span class="log-message">기상 모니터링 시작 (05:00~10:00)</span>
+                    </div>
+                    <div class="log-item">
+                        <span class="log-time">2026-06-10 18:30:00</span>
+                        <span class="log-type system">시스템</span>
+                        <span class="log-user">시스템</span>
+                        <span class="log-message">일일 리포트 생성 완료 — 확인요망: 3건, 확인완료: 124건</span>
+                    </div>
+                    <div class="log-item">
+                        <span class="log-time">2026-06-10 17:22:45</span>
+                        <span class="log-type action">처리</span>
+                        <span class="log-user">박담당</span>
+                        <span class="log-message">대상자 '정복순' 확인완료 처리 — 메모: 전화 통화 완료</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="common.js"></script>
+</body>
+</html>

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>독거노인 안전 관리 시스템</title>
+    <title>확인요망 리스트 - 독거노인 안전 관리 시스템</title>
     <link rel="stylesheet" href="common.css">
 </head>
 <body>
@@ -16,34 +16,19 @@
         <div class="sidebar-nav">
             <div class="nav-group">
                 <div class="nav-group-label">메인</div>
-                <a class="nav-item active" href="index.html">
-                    <span class="icon"><svg width="20" height="20" fill="none" stroke="white" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="4" rx="1"/><rect x="14" y="10" width="7" height="11" rx="1"/><rect x="3" y="13" width="7" height="8" rx="1"/></svg></span> 통합 대시보드
-                </a>
-                <a class="nav-item" href="alert-list.html">
-                    <span class="icon"><svg width="20" height="20" fill="none" stroke="white" stroke-width="2" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></span> 확인요망 리스트
-                    <span class="badge">5</span>
-                </a>
+                <a class="nav-item" href="index.html"><span class="icon"><svg width="20" height="20" fill="none" stroke="white" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="4" rx="1"/><rect x="14" y="10" width="7" height="11" rx="1"/><rect x="3" y="13" width="7" height="8" rx="1"/></svg></span> 통합 대시보드</a>
+                <a class="nav-item active" href="alert-list.html"><span class="icon"><svg width="20" height="20" fill="none" stroke="white" stroke-width="2" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></span> 확인요망 리스트<span class="badge">5</span></a>
             </div>
             <div class="nav-group">
                 <div class="nav-group-label">관리</div>
-                <a class="nav-item" href="seniors.html">
-                    <span class="icon"><svg width="20" height="20" fill="none" stroke="white" stroke-width="2" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span> 대상자 관리
-                </a>
-                <a class="nav-item" href="history.html">
-                    <span class="icon"><svg width="20" height="20" fill="none" stroke="white" stroke-width="2" viewBox="0 0 24 24"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/><line x1="8" y1="10" x2="16" y2="10"/><line x1="8" y1="14" x2="16" y2="14"/><line x1="8" y1="18" x2="12" y2="18"/></svg></span> 처리 내역 조회
-                </a>
-                <a class="nav-item" href="monitoring.html">
-                    <span class="icon"><svg width="20" height="20" fill="none" stroke="white" stroke-width="2" viewBox="0 0 24 24"><path d="M2 12C2 6.5 6.5 2 12 2a10 10 0 0 1 8 4"/><path d="M5 12a7 7 0 0 1 7-7 7 7 0 0 1 5.7 3"/><circle cx="12" cy="12" r="2" fill="white"/><line x1="12" y1="14" x2="12" y2="22"/></svg></span> 모니터링 현황
-                </a>
+                <a class="nav-item" href="seniors.html"><span class="icon"><svg width="20" height="20" fill="none" stroke="white" stroke-width="2" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span> 대상자 관리</a>
+                <a class="nav-item" href="history.html"><span class="icon"><svg width="20" height="20" fill="none" stroke="white" stroke-width="2" viewBox="0 0 24 24"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/><line x1="8" y1="10" x2="16" y2="10"/><line x1="8" y1="14" x2="16" y2="14"/><line x1="8" y1="18" x2="12" y2="18"/></svg></span> 처리 내역 조회</a>
+                <a class="nav-item" href="monitoring.html"><span class="icon"><svg width="20" height="20" fill="none" stroke="white" stroke-width="2" viewBox="0 0 24 24"><path d="M2 12C2 6.5 6.5 2 12 2a10 10 0 0 1 8 4"/><path d="M5 12a7 7 0 0 1 7-7 7 7 0 0 1 5.7 3"/><circle cx="12" cy="12" r="2" fill="white"/><line x1="12" y1="14" x2="12" y2="22"/></svg></span> 모니터링 현황</a>
             </div>
             <div class="nav-group">
                 <div class="nav-group-label">시스템</div>
-                <a class="nav-item" href="logs.html">
-                    <span class="icon"><svg width="20" height="20" fill="none" stroke="white" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="16" y2="17"/></svg></span> 로그 시스템
-                </a>
-                <a class="nav-item" href="settings.html">
-                    <span class="icon"><svg width="20" height="20" fill="none" stroke="white" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></span> 설정
-                </a>
+                <a class="nav-item" href="logs.html"><span class="icon"><svg width="20" height="20" fill="none" stroke="white" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="16" y2="17"/></svg></span> 로그 시스템</a>
+                <a class="nav-item" href="settings.html"><span class="icon"><svg width="20" height="20" fill="none" stroke="white" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></span> 설정</a>
             </div>
         </div>
         <div class="sidebar-footer">
@@ -55,50 +40,41 @@
         </div>
     </nav>
 
-    <!-- Main Content -->
+    <!-- Main -->
     <div class="main">
         <div class="topbar">
-            <div class="topbar-title">통합 대시보드</div>
+            <div class="topbar-title"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg> 확인요망 리스트</div>
             <div class="topbar-right">
-                <span class="date-info">2026년 6월 11일 (수) · 오전 5시~10시 기상 신호 기준</span>
-                <div class="topbar-user">
-                    <div class="avatar">김</div>
-                    김관리자
-                </div>
+                <div class="topbar-user"><div class="avatar">김</div> 김관리자</div>
             </div>
         </div>
         <div class="content">
-            <!-- Summary Stats -->
-            <div class="stat-grid">
-                <div class="stat-card">
-                    <div class="label">전체 관리 대상자</div>
-                    <div class="value">127</div>
-                    <div class="sub">활성 관리 중</div>
-                </div>
-                <div class="stat-card clickable" onclick="location.href='alert-list.html'">
-                    <div class="label">확인요망</div>
-                    <div class="value red">5</div>
-                    <div class="sub">기상 신호 미수신 · 클릭하여 리스트 확인</div>
-                </div>
-                <div class="stat-card">
-                    <div class="label">오늘 확인완료</div>
-                    <div class="value blue">3</div>
-                    <div class="sub">확인요망 → 확인완료 처리 건수</div>
-                </div>
-                <div class="stat-card">
-                    <div class="label">응급 호출</div>
-                    <div class="value">0</div>
-                    <div class="sub">금일 발생 건수</div>
-                </div>
-            </div>
-
-            <!-- Alert List Preview -->
             <div class="section-card">
                 <div class="section-header">
-                    <h2><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg> 확인요망 대상자 (최근)</h2>
-                    <div class="actions">
-                        <a href="alert-list.html" class="btn btn-outline btn-sm">전체 보기 →</a>
+                    <div>
+                        <h2>확인요망 대상자</h2>
+                        <p class="total-count" style="margin-top:4px;">총 <strong>5</strong>명 · 오전 5시~10시 기상 신호 미수신</p>
                     </div>
+                    <div class="actions">
+                        <button class="btn btn-outline btn-sm">전체 새로고침</button>
+                    </div>
+                </div>
+                <div class="filter-bar">
+                    <span class="filter-label">필터:</span>
+                    <select>
+                        <option>중증정도: 전체</option>
+                        <option>상</option>
+                        <option>중</option>
+                        <option>하</option>
+                    </select>
+                    <select>
+                        <option>관할구역: 전체</option>
+                        <option>종로구</option>
+                        <option>중구</option>
+                        <option>성동구</option>
+                        <option>마포구</option>
+                        <option>강북구</option>
+                    </select>
                 </div>
                 <table>
                     <thead>
@@ -110,6 +86,7 @@
                             <th>중증정도</th>
                             <th>등록일</th>
                             <th>상태</th>
+                            <th>조치</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -121,8 +98,9 @@
                             <td><span class="severity-badge high">상</span></td>
                             <td>2024.03.15</td>
                             <td><span class="badge-status danger">● 확인요망</span></td>
+                            <td><button class="btn btn-primary btn-sm" onclick="event.stopPropagation(); openConfirmModal()">확인</button></td>
                         </tr>
-                        <tr>
+                        <tr onclick="openDetailModal()">
                             <td><strong>이순자</strong></td>
                             <td>82세</td>
                             <td>010-2345-6789</td>
@@ -130,8 +108,9 @@
                             <td><span class="severity-badge mid">중</span></td>
                             <td>2023.11.20</td>
                             <td><span class="badge-status danger">● 확인요망</span></td>
+                            <td><button class="btn btn-primary btn-sm" onclick="event.stopPropagation(); openConfirmModal()">확인</button></td>
                         </tr>
-                        <tr>
+                        <tr onclick="openDetailModal()">
                             <td><strong>박철수</strong></td>
                             <td>75세</td>
                             <td>010-3456-7890</td>
@@ -139,6 +118,27 @@
                             <td><span class="severity-badge high">상</span></td>
                             <td>2024.01.08</td>
                             <td><span class="badge-status danger">● 확인요망</span></td>
+                            <td><button class="btn btn-primary btn-sm" onclick="event.stopPropagation(); openConfirmModal()">확인</button></td>
+                        </tr>
+                        <tr onclick="openDetailModal()">
+                            <td><strong>최말순</strong></td>
+                            <td>80세</td>
+                            <td>010-4567-8901</td>
+                            <td>서울 마포구 연남동 33</td>
+                            <td><span class="severity-badge low">하</span></td>
+                            <td>2024.05.22</td>
+                            <td><span class="badge-status danger">● 확인요망</span></td>
+                            <td><button class="btn btn-primary btn-sm" onclick="event.stopPropagation(); openConfirmModal()">확인</button></td>
+                        </tr>
+                        <tr onclick="openDetailModal()">
+                            <td><strong>정복순</strong></td>
+                            <td>85세</td>
+                            <td>010-5678-9012</td>
+                            <td>서울 강북구 수유동 56</td>
+                            <td><span class="severity-badge mid">중</span></td>
+                            <td>2023.09.10</td>
+                            <td><span class="badge-status danger">● 확인요망</span></td>
+                            <td><button class="btn btn-primary btn-sm" onclick="event.stopPropagation(); openConfirmModal()">확인</button></td>
                         </tr>
                     </tbody>
                 </table>
@@ -180,8 +180,7 @@
                         <div class="detail-value">2024.03.15</div>
                     </div>
                 </div>
-
-                <h4 style="font-size:13px;font-weight:700;margin-bottom:12px;color:#1B2A4A;">최근 연락 이력 (날짜 선택 시 대화 메모 열람)</h4>
+                <h4 style="font-size:13px;font-weight:700;margin-bottom:12px;color:#1B2A4A;">최근 연락 이력</h4>
                 <div style="display:grid;grid-template-columns:200px 1fr;gap:16px;">
                     <ul class="contact-list">
                         <li class="active"><span class="date">2026.06.10</span><span class="type">전화 통화</span></li>
@@ -201,12 +200,12 @@
             </div>
             <div class="modal-footer">
                 <button class="btn btn-danger" onclick="alert('응급 호출 완료\n\n관할 기관에 응급 호출이 전송되었습니다.\n(데모: 실제 발송되지 않음)')"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> 응급 호출</button>
-                <button class="btn btn-primary" onclick="openConfirmModal()"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> 확인 처리</button>
+                <button class="btn btn-primary" onclick="closeDetailModal(); openConfirmModal();"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> 확인 처리</button>
             </div>
         </div>
     </div>
 
-    <!-- Confirm Processing Modal -->
+    <!-- Confirm Modal -->
     <div class="modal-overlay" id="confirmModal">
         <div class="modal" style="max-width:520px;">
             <div class="modal-header">
@@ -225,21 +224,17 @@
                     </div>
                     <div class="form-group form-full">
                         <label>처리 상태</label>
-                        <select>
-                            <option>확인완료</option>
-                            <option>확인요망 유지</option>
-                            <option>응급 이관</option>
-                        </select>
+                        <select><option>확인완료</option><option>확인요망 유지</option><option>응급 이관</option></select>
                     </div>
                     <div class="form-group form-full">
                         <label>확인 내용 (대화 메모)</label>
-                        <textarea placeholder="전화 통화 결과 및 특이사항을 기록해주세요...&#10;&#10;예) 오전 9시 45분 전화 연결됨. 건강 상태 양호하다고 하심."></textarea>
+                        <textarea placeholder="전화 통화 결과 및 특이사항을 기록해주세요..."></textarea>
                     </div>
                 </div>
             </div>
             <div class="modal-footer">
                 <button class="btn btn-outline" onclick="closeConfirmModal()">취소</button>
-                <button class="btn btn-primary" onclick="alert('저장 완료!\nDB에 확인 처리 내역이 기록되었습니다.'); closeConfirmModal();">저장 (DB 기록)</button>
+                <button class="btn btn-primary" onclick="alert('저장 완료! DB에 확인 처리 내역이 기록되었습니다.'); closeConfirmModal();">저장 (DB 기록)</button>
             </div>
         </div>
     </div>
@@ -248,10 +243,7 @@
     <script>
         function openDetailModal() { document.getElementById('detailModal').classList.add('active'); }
         function closeDetailModal() { document.getElementById('detailModal').classList.remove('active'); }
-        function openConfirmModal() {
-            closeDetailModal();
-            document.getElementById('confirmModal').classList.add('active');
-        }
+        function openConfirmModal() { document.getElementById('confirmModal').classList.add('active'); }
         function closeConfirmModal() { document.getElementById('confirmModal').classList.remove('active'); }
     </script>
 </body>
