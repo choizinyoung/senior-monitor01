@@ -8,4 +8,6 @@ import java.util.List;
 public interface SignalLogRepository extends JpaRepository<SignalLog, Long> {
 
     List<SignalLog> findTop200ByOrderByReceivedAtDesc();
+
+    List<SignalLog> findBySeniorIdOrderByReceivedAtDesc(Long seniorId);
 }

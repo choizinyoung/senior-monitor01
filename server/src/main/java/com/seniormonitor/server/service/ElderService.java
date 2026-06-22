@@ -2,12 +2,14 @@ package com.seniormonitor.server.service;
 
 import com.seniormonitor.server.dto.RegisterRequest;
 import com.seniormonitor.server.entity.Senior;
+import com.seniormonitor.server.exception.BadRequestException;
+import com.seniormonitor.server.exception.ConflictException;
+import com.seniormonitor.server.exception.NotFoundException;
 import com.seniormonitor.server.repository.SeniorRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Map;
 
 @Service
 @Transactional
@@ -19,13 +21,12 @@ public class ElderService {
         this.seniorRepository = seniorRepository;
     }
 
-    public Map<String, Object> register(RegisterRequest req) {
+    public void register(RegisterRequest req) {
         if (req.getDeviceId() == null || req.getName() == null) {
-            return Map.of("error", "필수 정보 누락");
+            throw new BadRequestException("ERR_MISSING_FIELD", "deviceId, name은 필수 항목입니다.");
         }
-
         if (seniorRepository.findByDeviceId(req.getDeviceId()).isPresent()) {
-            return Map.of("error", "이미 등록된 기기입니다");
+            throw new ConflictException("ERR_DUPLICATE", "이미 등록된 기기입니다.");
         }
 
         Senior senior = new Senior();
@@ -35,12 +36,16 @@ public class ElderService {
         senior.setPhone(req.getPhone());
         senior.setAddress(req.getAddress());
         seniorRepository.save(senior);
-
-        return Map.of("success", true);
     }
 
     @Transactional(readOnly = true)
     public List<Senior> getAll() {
         return seniorRepository.findAll();
+    }
+
+    @Transactional(readOnly = true)
+    public Senior getById(Long id) {
+        return seniorRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("ERR_NOT_FOUND", "대상자를 찾을 수 없습니다."));
     }
 }

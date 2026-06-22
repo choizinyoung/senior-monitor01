@@ -3,6 +3,7 @@ package com.seniormonitor.server.service;
 import com.seniormonitor.server.dto.SignalRequest;
 import com.seniormonitor.server.entity.Senior;
 import com.seniormonitor.server.entity.SignalLog;
+import com.seniormonitor.server.exception.NotFoundException;
 import com.seniormonitor.server.repository.SeniorRepository;
 import com.seniormonitor.server.repository.SignalLogRepository;
 import org.springframework.stereotype.Service;
@@ -11,8 +12,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 
 @Service
 @Transactional
@@ -28,13 +27,9 @@ public class SignalService {
         this.seniorRepository = seniorRepository;
     }
 
-    public Map<String, Object> receive(SignalRequest req) {
-        Optional<Senior> seniorOpt = seniorRepository.findByDeviceId(req.getDeviceId());
-        if (seniorOpt.isEmpty()) {
-            return Map.of("error", "등록되지 않은 기기입니다");
-        }
-
-        Senior senior = seniorOpt.get();
+    public void receive(SignalRequest req) {
+        Senior senior = seniorRepository.findByDeviceId(req.getDeviceId())
+                .orElseThrow(() -> new NotFoundException("ERR_UNREGISTERED_DEVICE", "등록되지 않은 기기입니다."));
 
         SignalLog log = new SignalLog();
         log.setSenior(senior);
@@ -45,12 +40,15 @@ public class SignalService {
             senior.setStatus("정상");
             seniorRepository.save(senior);
         }
-
-        return Map.of("success", true);
     }
 
     @Transactional(readOnly = true)
     public List<SignalLog> getRecent() {
         return signalLogRepository.findTop200ByOrderByReceivedAtDesc();
+    }
+
+    @Transactional(readOnly = true)
+    public List<SignalLog> getSignalsBySenior(Long seniorId) {
+        return signalLogRepository.findBySeniorIdOrderByReceivedAtDesc(seniorId);
     }
 }
