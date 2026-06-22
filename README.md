@@ -198,7 +198,50 @@ cp launch.json.example launch.json
 
 ## 서버 실행 (로컬)
 
-### 방법 1 — VSCode Run 버튼 (권장)
+### 방법 1 — DB 없이 H2 인메모리로 실행 (클라우드 DB 없을 때)
+
+클라우드 DB(Railway 등)가 없거나 일시 중단된 상태에서도 로컬에서 바로 개발할 수 있습니다.
+H2는 서버가 실행되는 동안만 데이터를 메모리에 유지하고, 서버를 끄면 데이터가 초기화됩니다.
+
+**Windows (PowerShell) — `server` 폴더 안에서:**
+```powershell
+.\gradlew.bat bootRun --args='--spring.profiles.active=dev'
+```
+
+**Mac/Linux:**
+```bash
+./gradlew bootRun --args='--spring.profiles.active=dev'
+```
+
+실행 성공 시 아래 로그가 출력됩니다.
+```
+Added connection conn0: url=jdbc:h2:mem:seniormonitor
+Hibernate: create table senior (...)
+Hibernate: create table signal_log (...)
+Hibernate: create table contact_history (...)
+Tomcat started on port 8080
+```
+
+**H2 콘솔 — 브라우저에서 DB 직접 확인:**
+
+```
+http://localhost:8080/h2-console
+```
+
+| 항목 | 값 |
+|---|---|
+| JDBC URL | `jdbc:h2:mem:seniormonitor` |
+| User Name | `sa` |
+| Password | (비워 둠) |
+
+연결 후 SQL을 직접 입력해서 데이터를 확인할 수 있습니다.
+```sql
+SELECT * FROM SENIOR;
+SELECT * FROM SIGNAL_LOG ORDER BY RECEIVED_AT DESC;
+SELECT * FROM CONTACT_HISTORY ORDER BY CONTACTED_AT DESC;
+```
+
+### 방법 2 — VSCode Run 버튼 (PostgreSQL 연결, 권장)
 
 1. `src/main/java/com/seniormonitor/server/ServerApplication.java` 파일을 엽니다.
 2. `public class ServerApplication` 위쪽, 또는 `main` 메서드 위쪽에 작게 표시되는 `Run | Debug` 버튼을 클릭합니다. (Spring Boot Extension이 표시해주는 버튼)
@@ -206,7 +249,7 @@ cp launch.json.example launch.json
 
 또는 VSCode 왼쪽 사이드바 `Run and Debug` (벌레+삼각형 아이콘) 클릭 → 상단 드롭다운에서 `Spring Boot-ServerApplication` 선택 → 초록색 ▶ 버튼 클릭.
 
-### 방법 2 — 터미널에서 직접 실행
+### 방법 3 — 터미널에서 직접 실행 (PostgreSQL 연결)
 
 `server` 폴더 경로에서 실행해야 합니다.
 
@@ -351,7 +394,8 @@ https://[기존에 생성한 도메인]/signals
 |---|---|---|
 | VSCode에서 Java 프로젝트로 인식 안 됨 | 확장 미설치 또는 Gradle 동기화 안 됨 | `Extension Pack for Java` 설치 확인, 폴더를 다시 열거나 명령 팔레트에서 `Java: Clean Workspace` 실행 |
 | `Run` 버튼이 안 보임 | Spring Boot Extension 미설치 | `Spring Boot Extension Pack` 설치 |
-| DB 연결 실패 (`Connection refused` 등) | `launch.json`의 `DB_URL`/`DB_USERNAME`/`DB_PASSWORD` 오타, 또는 `DATABASE_PUBLIC_URL`(외부용)이 아닌 내부용 주소 사용 | Railway `Variables` 탭에서 `DATABASE_PUBLIC_URL` 다시 확인 |
+| DB 연결 실패 (`Connection refused` 등) | `launch.json`의 `DB_URL`/`DB_USERNAME`/`DB_PASSWORD` 오타, 또는 `DATABASE_PUBLIC_URL`(외부용)이 아닌 내부용 주소 사용 | Railway `Variables` 탭에서 `DATABASE_PUBLIC_URL` 다시 확인. 또는 H2 개발 모드로 우선 실행 (`--spring.profiles.active=dev`) |
+| H2 콘솔 접속 안 됨 | dev 프로파일 없이 실행함 | `.\gradlew.bat bootRun --args='--spring.profiles.active=dev'` 명령 확인 |
 | `launch.json`이 Git에 올라가 있음 | `.gitignore`에 경로 미등록 | 루트 `.gitignore`에 `.vscode/launch.json` 추가, `git rm --cached .vscode/launch.json`으로 이미 올라간 것 제거 |
 | 테이블이 안 생성됨 | `application.properties`의 `ddl-auto` 설정 누락 | `spring.jpa.hibernate.ddl-auto=update` 확인 |
 | 대시보드 화면이 안 뜸 | HTML 파일이 `static` 폴더에 없음 | `dashboard` 폴더 내용을 `server/src/main/resources/static/`로 복사했는지 확인 |
