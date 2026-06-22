@@ -2,7 +2,7 @@ package com.seniormonitor.server.controller;
 
 import com.seniormonitor.server.dto.RegisterRequest;
 import com.seniormonitor.server.dto.SignalRequest;
-import com.seniormonitor.server.entity.Elder;
+import com.seniormonitor.server.entity.Senior;
 import com.seniormonitor.server.entity.SignalLog;
 import com.seniormonitor.server.service.ElderService;
 import com.seniormonitor.server.service.SignalService;
@@ -39,7 +39,7 @@ public class MonitorController {
     }
 
     @GetMapping("/users")
-    public List<Elder> getUsers() {
+    public List<Senior> getUsers() {
         return elderService.getAll();
     }
 }

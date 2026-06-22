@@ -1,8 +1,8 @@
 package com.seniormonitor.server.service;
 
 import com.seniormonitor.server.dto.RegisterRequest;
-import com.seniormonitor.server.entity.Elder;
-import com.seniormonitor.server.repository.ElderRepository;
+import com.seniormonitor.server.entity.Senior;
+import com.seniormonitor.server.repository.SeniorRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,10 +13,10 @@ import java.util.Map;
 @Transactional
 public class ElderService {
 
-    private final ElderRepository elderRepository;
+    private final SeniorRepository seniorRepository;
 
-    public ElderService(ElderRepository elderRepository) {
-        this.elderRepository = elderRepository;
+    public ElderService(SeniorRepository seniorRepository) {
+        this.seniorRepository = seniorRepository;
     }
 
     public Map<String, Object> register(RegisterRequest req) {
@@ -24,19 +24,23 @@ public class ElderService {
             return Map.of("error", "필수 정보 누락");
         }
 
-        Elder elder = elderRepository.findByDeviceId(req.getDeviceId())
-                .orElse(new Elder());
-        elder.setDeviceId(req.getDeviceId());
-        elder.setName(req.getName());
-        elder.setBirthdate(req.getBirthdate());
-        elderRepository.save(elder);
+        if (seniorRepository.findByDeviceId(req.getDeviceId()).isPresent()) {
+            return Map.of("error", "이미 등록된 기기입니다");
+        }
 
-        System.out.println("사용자 등록: " + req.getName());
+        Senior senior = new Senior();
+        senior.setDeviceId(req.getDeviceId());
+        senior.setName(req.getName());
+        senior.setAge(req.getAge());
+        senior.setPhone(req.getPhone());
+        senior.setAddress(req.getAddress());
+        seniorRepository.save(senior);
+
         return Map.of("success", true);
     }
 
     @Transactional(readOnly = true)
-    public List<Elder> getAll() {
-        return elderRepository.findAll();
+    public List<Senior> getAll() {
+        return seniorRepository.findAll();
     }
 }

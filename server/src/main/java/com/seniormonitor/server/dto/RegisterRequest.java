@@ -1,16 +1,14 @@
 package com.seniormonitor.server.dto;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
 public class RegisterRequest {
     private String deviceId;
     private String name;
-    private String birthdate;
-
-    public String getDeviceId() { return deviceId; }
-    public void setDeviceId(String deviceId) { this.deviceId = deviceId; }
-
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
-
-    public String getBirthdate() { return birthdate; }
-    public void setBirthdate(String birthdate) { this.birthdate = birthdate; }
+    private Integer age;
+    private String phone;
+    private String address;
 }

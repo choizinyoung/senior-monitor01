@@ -1,33 +1,32 @@
 package com.seniormonitor.server.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "signal_log")
+@Getter
+@Setter
+@NoArgsConstructor
 public class SignalLog {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String deviceId;
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "senior_id", nullable = false)
+    private Senior senior;
 
-    private String deviceModel;
+    @Column(name = "received_at", nullable = false)
+    private LocalDateTime receivedAt = LocalDateTime.now();
 
-    private LocalDateTime signalTime = LocalDateTime.now();
-
-    public SignalLog() {}
-
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-
-    public String getDeviceId() { return deviceId; }
-    public void setDeviceId(String deviceId) { this.deviceId = deviceId; }
-
-    public String getDeviceModel() { return deviceModel; }
-    public void setDeviceModel(String deviceModel) { this.deviceModel = deviceModel; }
-
-    public LocalDateTime getSignalTime() { return signalTime; }
-    public void setSignalTime(LocalDateTime signalTime) { this.signalTime = signalTime; }
+    @Column(name = "signal_date", nullable = false, length = 10)
+    private String signalDate;
 }
