@@ -21,14 +21,19 @@ public class AlertService {
         this.seniorRepository = seniorRepository;
     }
 
-    public List<AlertResponse> getDangerAlerts(String severity, String district) {
+    public List<AlertResponse> getDangerAlerts(String severity, String gu, String dong) {
         LocalDate today = LocalDate.now();
         LocalDateTime windowStart = LocalDateTime.of(today, LocalTime.of(5, 0));
         LocalDateTime windowEnd = LocalDateTime.of(today, LocalTime.of(10, 0));
 
+        boolean hasGu = gu != null && !gu.isEmpty();
+        boolean hasDong = dong != null && !dong.isEmpty();
+
         List<Senior> seniors;
-        if (district != null && !district.isEmpty()) {
-            seniors = seniorRepository.findDangerSeniorsByDistrict(windowStart, windowEnd, district);
+        if (hasGu && hasDong) {
+            seniors = seniorRepository.findDangerSeniorsByGuAndDong(windowStart, windowEnd, gu, dong);
+        } else if (hasGu) {
+            seniors = seniorRepository.findDangerSeniorsByGu(windowStart, windowEnd, gu);
         } else {
             seniors = seniorRepository.findDangerSeniors(windowStart, windowEnd);
         }

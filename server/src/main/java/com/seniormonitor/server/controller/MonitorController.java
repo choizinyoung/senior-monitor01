@@ -2,6 +2,7 @@ package com.seniormonitor.server.controller;
 
 import com.seniormonitor.server.dto.AlertResponse;
 import com.seniormonitor.server.dto.ApiResponse;
+import com.seniormonitor.server.dto.DashboardStatsResponse;
 import com.seniormonitor.server.dto.RegisterRequest;
 import com.seniormonitor.server.dto.SignalRequest;
 import com.seniormonitor.server.entity.ContactHistory;
@@ -9,6 +10,7 @@ import com.seniormonitor.server.entity.Senior;
 import com.seniormonitor.server.entity.SignalLog;
 import com.seniormonitor.server.service.AlertService;
 import com.seniormonitor.server.service.ContactHistoryService;
+import com.seniormonitor.server.service.DashboardService;
 import com.seniormonitor.server.service.ElderService;
 import com.seniormonitor.server.service.SignalService;
 import org.springframework.http.HttpStatus;
@@ -24,15 +26,24 @@ public class MonitorController {
     private final SignalService signalService;
     private final AlertService alertService;
     private final ContactHistoryService contactHistoryService;
+    private final DashboardService dashboardService;
 
     public MonitorController(ElderService elderService,
                               SignalService signalService,
                               AlertService alertService,
-                              ContactHistoryService contactHistoryService) {
+                              ContactHistoryService contactHistoryService,
+                              DashboardService dashboardService) {
         this.elderService = elderService;
         this.signalService = signalService;
         this.alertService = alertService;
         this.contactHistoryService = contactHistoryService;
+        this.dashboardService = dashboardService;
+    }
+
+    // 대시보드 통계
+    @GetMapping("/api/dashboard/stats")
+    public ApiResponse<DashboardStatsResponse> getDashboardStats() {
+        return ApiResponse.ok(dashboardService.getStats());
     }
 
     // API 1: 대상자 등록 (APK)
@@ -47,8 +58,9 @@ public class MonitorController {
     @GetMapping("/api/alerts")
     public ApiResponse<List<AlertResponse>> getAlerts(
             @RequestParam(required = false) String severity,
-            @RequestParam(required = false) String district) {
-        return ApiResponse.ok(alertService.getDangerAlerts(severity, district));
+            @RequestParam(required = false) String gu,
+            @RequestParam(required = false) String dong) {
+        return ApiResponse.ok(alertService.getDangerAlerts(severity, gu, dong));
     }
 
     // API 3: 대상자 전체 목록

@@ -19,8 +19,9 @@ public class AlertController {
     @GetMapping("/alerts")
     public List<AlertResponse> getAlerts(
             @RequestParam(required = false) String severity,
-            @RequestParam(required = false) String district
+            @RequestParam(required = false) String gu,
+            @RequestParam(required = false) String dong
     ) {
-        return alertService.getDangerAlerts(severity, district);
+        return alertService.getDangerAlerts(severity, gu, dong);
     }
 }
