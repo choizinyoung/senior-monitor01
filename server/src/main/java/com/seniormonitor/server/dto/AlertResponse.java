@@ -14,7 +14,9 @@ public class AlertResponse {
     private final String name;
     private final Integer age;
     private final String phone;
-    private final String address;
+    private final String city;
+    private final String gu;
+    private final String dong;
     private final String status;
     private final String severity;
     private final String registeredAt;
@@ -24,7 +26,9 @@ public class AlertResponse {
         this.name = senior.getName();
         this.age = senior.getAge();
         this.phone = senior.getPhone();
-        this.address = senior.getAddress();
+        this.city = senior.getCity();
+        this.gu = senior.getGu();
+        this.dong = senior.getDong();
         this.status = senior.getStatus();
         this.severity = "high";
         this.registeredAt = senior.getRegisteredAt().format(FMT);

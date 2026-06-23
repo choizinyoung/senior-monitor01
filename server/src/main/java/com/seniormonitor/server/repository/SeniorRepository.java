@@ -30,7 +30,7 @@ public interface SeniorRepository extends JpaRepository<Senior, Long> {
     @Query("""
         SELECT s FROM Senior s
         WHERE s.isDeleted = 'N'
-          AND s.address LIKE CONCAT('%', CAST(:district AS text), '%')
+          AND s.gu = :district
           AND s.id NOT IN (
               SELECT sl.senior.id FROM SignalLog sl
               WHERE sl.receivedAt >= :windowStart

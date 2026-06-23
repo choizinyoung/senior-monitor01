@@ -30,8 +30,14 @@ public class Senior {
     @Column(nullable = false, length = 20)
     private String phone;
 
-    @Column(nullable = false, length = 200)
-    private String address;
+    @Column(nullable = false, length = 20)
+    private String city;
+
+    @Column(nullable = false, length = 20)
+    private String gu;
+
+    @Column(nullable = false, length = 20)
+    private String dong;
 
     @Column(nullable = false, length = 10)
     private String status = "정상";

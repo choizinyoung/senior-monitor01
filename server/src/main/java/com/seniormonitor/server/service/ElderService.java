@@ -34,7 +34,9 @@ public class ElderService {
         senior.setName(req.getName());
         senior.setAge(req.getAge());
         senior.setPhone(req.getPhone());
-        senior.setAddress(req.getAddress());
+        senior.setCity(req.getCity());
+        senior.setGu(req.getGu());
+        senior.setDong(req.getDong());
         seniorRepository.save(senior);
     }
 
