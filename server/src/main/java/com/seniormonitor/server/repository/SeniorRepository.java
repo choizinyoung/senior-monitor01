@@ -14,6 +14,7 @@ public interface SeniorRepository extends JpaRepository<Senior, Long> {
     Optional<Senior> findByDeviceId(String deviceId);
 
     boolean existsByPhone(String phone);
+    long countByIsDeleted(String isDeleted);
 
     @Query("""
         SELECT s FROM Senior s
@@ -32,16 +33,34 @@ public interface SeniorRepository extends JpaRepository<Senior, Long> {
     @Query("""
         SELECT s FROM Senior s
         WHERE s.isDeleted = 'N'
-          AND s.gu = :district
+          AND s.gu = :gu
           AND s.id NOT IN (
               SELECT sl.senior.id FROM SignalLog sl
               WHERE sl.receivedAt >= :windowStart
                 AND sl.receivedAt <= :windowEnd
           )
         """)
-    List<Senior> findDangerSeniorsByDistrict(
+    List<Senior> findDangerSeniorsByGu(
             @Param("windowStart") LocalDateTime windowStart,
             @Param("windowEnd") LocalDateTime windowEnd,
-            @Param("district") String district
+            @Param("gu") String gu
+    );
+
+    @Query("""
+        SELECT s FROM Senior s
+        WHERE s.isDeleted = 'N'
+          AND s.gu = :gu
+          AND s.dong = :dong
+          AND s.id NOT IN (
+              SELECT sl.senior.id FROM SignalLog sl
+              WHERE sl.receivedAt >= :windowStart
+                AND sl.receivedAt <= :windowEnd
+          )
+        """)
+    List<Senior> findDangerSeniorsByGuAndDong(
+            @Param("windowStart") LocalDateTime windowStart,
+            @Param("windowEnd") LocalDateTime windowEnd,
+            @Param("gu") String gu,
+            @Param("dong") String dong
     );
 }
