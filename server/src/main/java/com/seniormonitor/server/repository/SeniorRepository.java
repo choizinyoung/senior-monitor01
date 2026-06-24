@@ -13,6 +13,8 @@ public interface SeniorRepository extends JpaRepository<Senior, Long> {
 
     Optional<Senior> findByDeviceId(String deviceId);
 
+    boolean existsByPhone(String phone);
+
     @Query("""
         SELECT s FROM Senior s
         WHERE s.isDeleted = 'N'

@@ -1,6 +1,7 @@
 package com.seniormonitor.server.service;
 
 import com.seniormonitor.server.dto.RegisterRequest;
+import com.seniormonitor.server.dto.UpdateSeniorRequest;
 import com.seniormonitor.server.entity.Senior;
 import com.seniormonitor.server.exception.BadRequestException;
 import com.seniormonitor.server.exception.ConflictException;
@@ -21,23 +22,27 @@ public class ElderService {
         this.seniorRepository = seniorRepository;
     }
 
-    public void register(RegisterRequest req) {
+    public Senior register(RegisterRequest req) {
         if (req.getDeviceId() == null || req.getName() == null) {
             throw new BadRequestException("ERR_MISSING_FIELD", "deviceId, name은 필수 항목입니다.");
         }
         if (seniorRepository.findByDeviceId(req.getDeviceId()).isPresent()) {
             throw new ConflictException("ERR_DUPLICATE", "이미 등록된 기기입니다.");
         }
+        if (req.getPhone() != null && seniorRepository.existsByPhone(req.getPhone())) {
+            throw new ConflictException("ERR_DUPLICATE_PHONE", "이미 등록된 번호입니다.");
+        }
 
         Senior senior = new Senior();
         senior.setDeviceId(req.getDeviceId());
         senior.setName(req.getName());
+        senior.setStatus("정상");
         senior.setAge(req.getAge());
         senior.setPhone(req.getPhone());
         senior.setCity(req.getCity());
         senior.setGu(req.getGu());
         senior.setDong(req.getDong());
-        seniorRepository.save(senior);
+        return seniorRepository.save(senior);
     }
 
     @Transactional(readOnly = true)
@@ -49,5 +54,19 @@ public class ElderService {
     public Senior getById(Long id) {
         return seniorRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("ERR_NOT_FOUND", "대상자를 찾을 수 없습니다."));
+    }
+
+    public Senior update(Long id, UpdateSeniorRequest req) {
+        Senior senior = seniorRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("ERR_NOT_FOUND", "대상자를 찾을 수 없습니다."));
+
+        if (req.getName()  != null) senior.setName(req.getName());
+        if (req.getAge()   != null) senior.setAge(req.getAge());
+        if (req.getPhone() != null) senior.setPhone(req.getPhone());
+        if (req.getCity()  != null) senior.setCity(req.getCity());
+        if (req.getGu()    != null) senior.setGu(req.getGu());
+        if (req.getDong()  != null) senior.setDong(req.getDong());
+
+        return seniorRepository.save(senior);
     }
 }

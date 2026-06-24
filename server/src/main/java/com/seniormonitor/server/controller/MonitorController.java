@@ -2,7 +2,9 @@ package com.seniormonitor.server.controller;
 
 import com.seniormonitor.server.dto.AlertResponse;
 import com.seniormonitor.server.dto.ApiResponse;
+import com.seniormonitor.server.dto.ConfirmRequest;
 import com.seniormonitor.server.dto.RegisterRequest;
+import com.seniormonitor.server.dto.UpdateSeniorRequest;
 import com.seniormonitor.server.dto.SignalRequest;
 import com.seniormonitor.server.entity.ContactHistory;
 import com.seniormonitor.server.entity.Senior;
@@ -38,9 +40,8 @@ public class MonitorController {
     // API 1: 대상자 등록 (APK)
     @PostMapping("/api/seniors/register")
     @ResponseStatus(HttpStatus.CREATED)
-    public ApiResponse<Void> register(@RequestBody RegisterRequest req) {
-        elderService.register(req);
-        return ApiResponse.ok(null);
+    public ApiResponse<Senior> register(@RequestBody RegisterRequest req) {
+        return ApiResponse.ok(elderService.register(req));
     }
 
     // API 2: 위험 대상자 알림 목록 (신호 미수신자)
@@ -63,10 +64,24 @@ public class MonitorController {
         return ApiResponse.ok(elderService.getById(seniorId));
     }
 
+    // API 3-4: 대상자 정보 수정
+    @PostMapping("/api/seniors/{seniorId}/update")
+    public ApiResponse<Senior> updateSenior(@PathVariable Long seniorId,
+                                             @RequestBody UpdateSeniorRequest req) {
+        return ApiResponse.ok(elderService.update(seniorId, req));
+    }
+
     // API 3-2: 개별 대상자 연락 이력
     @GetMapping("/api/seniors/{seniorId}/contacts")
     public ApiResponse<List<ContactHistory>> getContactHistory(@PathVariable Long seniorId) {
         return ApiResponse.ok(contactHistoryService.getHistory(seniorId));
+    }
+
+    // API 4: 확인 처리 (status 변경 + 연락 이력 기록)
+    @PostMapping("/api/alerts/{seniorId}/confirm")
+    public ApiResponse<Senior> confirm(@PathVariable Long seniorId,
+                                       @RequestBody ConfirmRequest req) {
+        return ApiResponse.ok(contactHistoryService.confirm(seniorId, req));
     }
 
     // API 3-3: 개별 대상자 신호 이력
@@ -92,9 +107,8 @@ public class MonitorController {
     // 하위 호환 — APK가 기존 경로를 그대로 쓸 경우
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
-    public ApiResponse<Void> registerLegacy(@RequestBody RegisterRequest req) {
-        elderService.register(req);
-        return ApiResponse.ok(null);
+    public ApiResponse<Senior> registerLegacy(@RequestBody RegisterRequest req) {
+        return ApiResponse.ok(elderService.register(req));
     }
 
     @PostMapping("/signal")
