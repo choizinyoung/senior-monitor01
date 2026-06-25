@@ -16,9 +16,11 @@ import com.seniormonitor.server.service.ContactHistoryService;
 import com.seniormonitor.server.service.DashboardService;
 import com.seniormonitor.server.service.ElderService;
 import com.seniormonitor.server.service.SignalService;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -111,10 +113,13 @@ public class MonitorController {
         return ApiResponse.ok(contactHistoryService.confirm(seniorId, req));
     }
 
-    // API 3-3: 개별 대상자 신호 이력
+    // API 3-3: 개별 대상자 신호 이력 (기본: 오늘, 날짜 범위 검색 가능)
     @GetMapping("/api/seniors/{seniorId}/signals")
-    public ApiResponse<List<SignalLog>> getSignalHistory(@PathVariable Long seniorId) {
-        return ApiResponse.ok(signalService.getSignalsBySenior(seniorId));
+    public ApiResponse<List<SignalLog>> getSignalHistory(
+            @PathVariable Long seniorId,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to) {
+        return ApiResponse.ok(signalService.getSignalsBySenior(seniorId, from, to));
     }
 
     // API 5: 기상신호 수신 (APK)
@@ -125,10 +130,12 @@ public class MonitorController {
         return ApiResponse.ok(null);
     }
 
-    // API 6: 전체 신호 목록 (최근 200건)
+    // API 6: 전체 신호 목록 (기본: 오늘, 날짜 범위 검색 가능)
     @GetMapping("/api/signals")
-    public ApiResponse<List<SignalLog>> getSignals() {
-        return ApiResponse.ok(signalService.getRecent());
+    public ApiResponse<List<SignalLog>> getSignals(
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to) {
+        return ApiResponse.ok(signalService.getRecent(from, to));
     }
 
     // 하위 호환 — APK가 기존 경로를 그대로 쓸 경우

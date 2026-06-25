@@ -10,6 +10,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
@@ -38,12 +40,16 @@ public class SignalService {
     }
 
     @Transactional(readOnly = true)
-    public List<SignalLog> getRecent() {
-        return signalLogRepository.findTop200ByOrderByReceivedAtDesc();
+    public List<SignalLog> getRecent(LocalDate from, LocalDate to) {
+        LocalDateTime start = (from != null ? from : LocalDate.now()).atStartOfDay();
+        LocalDateTime end   = (to   != null ? to   : LocalDate.now()).atTime(LocalTime.MAX);
+        return signalLogRepository.findByReceivedAtBetweenOrderByReceivedAtDesc(start, end);
     }
 
     @Transactional(readOnly = true)
-    public List<SignalLog> getSignalsBySenior(Long seniorId) {
-        return signalLogRepository.findBySeniorIdOrderByReceivedAtDesc(seniorId);
+    public List<SignalLog> getSignalsBySenior(Long seniorId, LocalDate from, LocalDate to) {
+        LocalDateTime start = (from != null ? from : LocalDate.now()).atStartOfDay();
+        LocalDateTime end   = (to   != null ? to   : LocalDate.now()).atTime(LocalTime.MAX);
+        return signalLogRepository.findBySeniorIdAndReceivedAtBetweenOrderByReceivedAtDesc(seniorId, start, end);
     }
 }
