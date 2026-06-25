@@ -10,6 +10,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
+
 @Service
 @Transactional(readOnly = true)
 public class DashboardService {
@@ -25,13 +26,9 @@ public class DashboardService {
 
     public DashboardStatsResponse getStats() {
         long totalSeniors = seniorRepository.countByIsDeleted("N");
+        long alertCount   = seniorRepository.countByStatusAndIsDeleted("확인요망", "N");
 
-        LocalDate today = LocalDate.now();
-        LocalDateTime windowStart = LocalDateTime.of(today, LocalTime.of(5, 0));
-        LocalDateTime windowEnd = LocalDateTime.of(today, LocalTime.of(10, 0));
-        long alertCount = seniorRepository.findDangerSeniors(windowStart, windowEnd).size();
-
-        LocalDateTime startOfDay = LocalDateTime.of(today, LocalTime.MIN);
+        LocalDateTime startOfDay = LocalDateTime.of(LocalDate.now(), LocalTime.MIN);
         long confirmedTodayCount = contactHistoryRepository.countConfirmedToday(startOfDay);
         long emergencyTodayCount = contactHistoryRepository.countEmergencyToday(startOfDay);
 

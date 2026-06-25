@@ -2,6 +2,7 @@ package com.seniormonitor.server.repository;
 
 import com.seniormonitor.server.entity.Senior;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -17,63 +18,27 @@ public interface SeniorRepository extends JpaRepository<Senior, Long> {
     long countByIsDeleted(String isDeleted);
     List<Senior> findByIsDeleted(String isDeleted);
 
+    long countByStatusAndIsDeleted(String status, String isDeleted);
+
+    List<Senior> findByStatusAndIsDeleted(String status, String isDeleted);
+
+    List<Senior> findByStatusAndIsDeletedAndGu(String status, String isDeleted, String gu);
+
+    List<Senior> findByStatusAndIsDeletedAndGuAndDong(String status, String isDeleted, String gu, String dong);
+
+    @Modifying
     @Query("""
-        SELECT s FROM Senior s
+        UPDATE Senior s SET s.status = '확인요망'
         WHERE s.isDeleted = 'N'
-          AND s.status NOT IN ('확인완료', '응급호출')
-          AND (
-              s.status = '확인요망유지'
-              OR s.id NOT IN (
-                  SELECT sl.senior.id FROM SignalLog sl
-                  WHERE sl.receivedAt >= :windowStart
-                    AND sl.receivedAt <= :windowEnd
-              )
+          AND s.status = '정상'
+          AND s.id NOT IN (
+              SELECT sl.senior.id FROM SignalLog sl
+              WHERE sl.receivedAt >= :windowStart
+                AND sl.receivedAt <= :windowEnd
           )
         """)
-    List<Senior> findDangerSeniors(
+    void updateStatusToConfirmRequired(
             @Param("windowStart") LocalDateTime windowStart,
             @Param("windowEnd") LocalDateTime windowEnd
-    );
-
-    @Query("""
-        SELECT s FROM Senior s
-        WHERE s.isDeleted = 'N'
-          AND s.status NOT IN ('확인완료', '응급호출')
-          AND s.gu = :gu
-          AND (
-              s.status = '확인요망유지'
-              OR s.id NOT IN (
-                  SELECT sl.senior.id FROM SignalLog sl
-                  WHERE sl.receivedAt >= :windowStart
-                    AND sl.receivedAt <= :windowEnd
-              )
-          )
-        """)
-    List<Senior> findDangerSeniorsByGu(
-            @Param("windowStart") LocalDateTime windowStart,
-            @Param("windowEnd") LocalDateTime windowEnd,
-            @Param("gu") String gu
-    );
-
-    @Query("""
-        SELECT s FROM Senior s
-        WHERE s.isDeleted = 'N'
-          AND s.status NOT IN ('확인완료', '응급호출')
-          AND s.gu = :gu
-          AND s.dong = :dong
-          AND (
-              s.status = '확인요망유지'
-              OR s.id NOT IN (
-                  SELECT sl.senior.id FROM SignalLog sl
-                  WHERE sl.receivedAt >= :windowStart
-                    AND sl.receivedAt <= :windowEnd
-              )
-          )
-        """)
-    List<Senior> findDangerSeniorsByGuAndDong(
-            @Param("windowStart") LocalDateTime windowStart,
-            @Param("windowEnd") LocalDateTime windowEnd,
-            @Param("gu") String gu,
-            @Param("dong") String dong
     );
 }
