@@ -3,6 +3,7 @@ package com.seniormonitor.server.controller;
 import com.seniormonitor.server.dto.AlertResponse;
 import com.seniormonitor.server.dto.ApiResponse;
 import com.seniormonitor.server.dto.ConfirmRequest;
+import com.seniormonitor.server.dto.ContactHistoryResponse;
 import com.seniormonitor.server.dto.DashboardStatsResponse;
 import com.seniormonitor.server.dto.RegisterRequest;
 import com.seniormonitor.server.dto.UpdateSeniorRequest;
@@ -94,6 +95,13 @@ public class MonitorController {
     @GetMapping("/api/seniors/{seniorId}/contacts")
     public ApiResponse<List<ContactHistory>> getContactHistory(@PathVariable Long seniorId) {
         return ApiResponse.ok(contactHistoryService.getHistory(seniorId));
+    }
+
+    // API 4-1: 전체 처리내역 조회
+    @GetMapping("/api/contacts")
+    public ApiResponse<List<ContactHistoryResponse>> getAllContacts(
+            @RequestParam(required = false) String resultStatus) {
+        return ApiResponse.ok(contactHistoryService.getAllHistory(resultStatus));
     }
 
     // API 4: 확인 처리 (status 변경 + 연락 이력 기록)

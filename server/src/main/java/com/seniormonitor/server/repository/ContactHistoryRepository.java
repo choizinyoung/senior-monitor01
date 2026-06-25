@@ -12,6 +12,12 @@ public interface ContactHistoryRepository extends JpaRepository<ContactHistory, 
 
     List<ContactHistory> findBySeniorIdOrderByContactedAtDesc(Long seniorId);
 
+    @Query("SELECT ch FROM ContactHistory ch JOIN FETCH ch.senior ORDER BY ch.contactedAt DESC")
+    List<ContactHistory> findAllWithSenior();
+
+    @Query("SELECT ch FROM ContactHistory ch JOIN FETCH ch.senior WHERE ch.resultStatus = :status ORDER BY ch.contactedAt DESC")
+    List<ContactHistory> findAllWithSeniorByStatus(@Param("status") String status);
+
     @Query("""
         SELECT COUNT(DISTINCT ch.senior.id) FROM ContactHistory ch
         WHERE ch.resultStatus = '확인완료'

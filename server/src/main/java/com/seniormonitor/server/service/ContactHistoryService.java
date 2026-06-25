@@ -1,6 +1,7 @@
 package com.seniormonitor.server.service;
 
 import com.seniormonitor.server.dto.ConfirmRequest;
+import com.seniormonitor.server.dto.ContactHistoryResponse;
 import com.seniormonitor.server.entity.ContactHistory;
 import com.seniormonitor.server.entity.Senior;
 import com.seniormonitor.server.exception.BadRequestException;
@@ -34,6 +35,13 @@ public class ContactHistoryService {
         return contactHistoryRepository.findBySeniorIdOrderByContactedAtDesc(seniorId);
     }
 
+    public List<ContactHistoryResponse> getAllHistory(String resultStatus) {
+        List<ContactHistory> list = resultStatus != null
+                ? contactHistoryRepository.findAllWithSeniorByStatus(resultStatus)
+                : contactHistoryRepository.findAllWithSenior();
+        return list.stream().map(ContactHistoryResponse::new).toList();
+    }
+
     @Transactional
     public Senior confirm(Long seniorId, ConfirmRequest req) {
         Senior senior = seniorRepository.findById(seniorId)
@@ -56,7 +64,12 @@ public class ContactHistoryService {
         history.setContactedAt(req.getContactedAt() != null ? req.getContactedAt() : LocalDateTime.now());
         contactHistoryRepository.save(history);
 
-        senior.setStatus(req.getResultStatus());
+        String seniorStatus = switch (req.getResultStatus()) {
+            case "확인완료" -> "정상";
+            case "확인요망유지" -> "확인요망";
+            default -> req.getResultStatus();
+        };
+        senior.setStatus(seniorStatus);
         return seniorRepository.save(senior);
     }
 }
