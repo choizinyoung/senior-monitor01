@@ -33,7 +33,8 @@ public class DashboardService {
 
         LocalDateTime startOfDay = LocalDateTime.of(today, LocalTime.MIN);
         long confirmedTodayCount = contactHistoryRepository.countConfirmedToday(startOfDay);
+        long emergencyTodayCount = contactHistoryRepository.countEmergencyToday(startOfDay);
 
-        return new DashboardStatsResponse(totalSeniors, alertCount, confirmedTodayCount);
+        return new DashboardStatsResponse(totalSeniors, alertCount, confirmedTodayCount, emergencyTodayCount);
     }
 }

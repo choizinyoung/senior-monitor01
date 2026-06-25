@@ -13,9 +13,16 @@ public interface ContactHistoryRepository extends JpaRepository<ContactHistory, 
     List<ContactHistory> findBySeniorIdOrderByContactedAtDesc(Long seniorId);
 
     @Query("""
-        SELECT COUNT(ch) FROM ContactHistory ch
+        SELECT COUNT(DISTINCT ch.senior.id) FROM ContactHistory ch
         WHERE ch.resultStatus = '확인완료'
           AND ch.createdAt >= :startOfDay
         """)
     long countConfirmedToday(@Param("startOfDay") LocalDateTime startOfDay);
+
+    @Query("""
+        SELECT COUNT(DISTINCT ch.senior.id) FROM ContactHistory ch
+        WHERE ch.resultStatus = '응급호출'
+          AND ch.createdAt >= :startOfDay
+        """)
+    long countEmergencyToday(@Param("startOfDay") LocalDateTime startOfDay);
 }

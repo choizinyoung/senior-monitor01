@@ -83,6 +83,13 @@ public class MonitorController {
         return ApiResponse.ok(elderService.update(seniorId, req));
     }
 
+    // API 3-5: 대상자 소프트 삭제
+    @DeleteMapping("/api/seniors/{seniorId}")
+    public ApiResponse<Void> deleteSenior(@PathVariable Long seniorId) {
+        elderService.softDelete(seniorId);
+        return ApiResponse.ok(null);
+    }
+
     // API 3-2: 개별 대상자 연락 이력
     @GetMapping("/api/seniors/{seniorId}/contacts")
     public ApiResponse<List<ContactHistory>> getContactHistory(@PathVariable Long seniorId) {

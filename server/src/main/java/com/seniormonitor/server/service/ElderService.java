@@ -47,7 +47,7 @@ public class ElderService {
 
     @Transactional(readOnly = true)
     public List<Senior> getAll() {
-        return seniorRepository.findAll();
+        return seniorRepository.findByIsDeleted("N");
     }
 
     @Transactional(readOnly = true)
@@ -68,5 +68,17 @@ public class ElderService {
         if (req.getDong()  != null) senior.setDong(req.getDong());
 
         return seniorRepository.save(senior);
+    }
+
+    public void softDelete(Long id) {
+        Senior senior = seniorRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("ERR_NOT_FOUND", "대상자를 찾을 수 없습니다."));
+
+        if ("확인요망".equals(senior.getStatus())) {
+            throw new BadRequestException("ERR_CANNOT_DELETE", "확인요망 상태의 대상자는 삭제할 수 없습니다.");
+        }
+
+        senior.setIsDeleted("Y");
+        seniorRepository.save(senior);
     }
 }

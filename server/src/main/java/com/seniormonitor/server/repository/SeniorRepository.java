@@ -15,14 +15,19 @@ public interface SeniorRepository extends JpaRepository<Senior, Long> {
 
     boolean existsByPhone(String phone);
     long countByIsDeleted(String isDeleted);
+    List<Senior> findByIsDeleted(String isDeleted);
 
     @Query("""
         SELECT s FROM Senior s
         WHERE s.isDeleted = 'N'
-          AND s.id NOT IN (
-              SELECT sl.senior.id FROM SignalLog sl
-              WHERE sl.receivedAt >= :windowStart
-                AND sl.receivedAt <= :windowEnd
+          AND s.status NOT IN ('확인완료', '응급호출')
+          AND (
+              s.status = '확인요망유지'
+              OR s.id NOT IN (
+                  SELECT sl.senior.id FROM SignalLog sl
+                  WHERE sl.receivedAt >= :windowStart
+                    AND sl.receivedAt <= :windowEnd
+              )
           )
         """)
     List<Senior> findDangerSeniors(
@@ -33,11 +38,15 @@ public interface SeniorRepository extends JpaRepository<Senior, Long> {
     @Query("""
         SELECT s FROM Senior s
         WHERE s.isDeleted = 'N'
+          AND s.status NOT IN ('확인완료', '응급호출')
           AND s.gu = :gu
-          AND s.id NOT IN (
-              SELECT sl.senior.id FROM SignalLog sl
-              WHERE sl.receivedAt >= :windowStart
-                AND sl.receivedAt <= :windowEnd
+          AND (
+              s.status = '확인요망유지'
+              OR s.id NOT IN (
+                  SELECT sl.senior.id FROM SignalLog sl
+                  WHERE sl.receivedAt >= :windowStart
+                    AND sl.receivedAt <= :windowEnd
+              )
           )
         """)
     List<Senior> findDangerSeniorsByGu(
@@ -49,12 +58,16 @@ public interface SeniorRepository extends JpaRepository<Senior, Long> {
     @Query("""
         SELECT s FROM Senior s
         WHERE s.isDeleted = 'N'
+          AND s.status NOT IN ('확인완료', '응급호출')
           AND s.gu = :gu
           AND s.dong = :dong
-          AND s.id NOT IN (
-              SELECT sl.senior.id FROM SignalLog sl
-              WHERE sl.receivedAt >= :windowStart
-                AND sl.receivedAt <= :windowEnd
+          AND (
+              s.status = '확인요망유지'
+              OR s.id NOT IN (
+                  SELECT sl.senior.id FROM SignalLog sl
+                  WHERE sl.receivedAt >= :windowStart
+                    AND sl.receivedAt <= :windowEnd
+              )
           )
         """)
     List<Senior> findDangerSeniorsByGuAndDong(
