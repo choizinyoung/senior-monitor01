@@ -35,11 +35,6 @@ public class SignalService {
         log.setSenior(senior);
         log.setSignalDate(LocalDate.now().format(DATE_FMT));
         signalLogRepository.save(log);
-
-        if ("확인요망".equals(senior.getStatus())) {
-            senior.setStatus("정상");
-            seniorRepository.save(senior);
-        }
     }
 
     @Transactional(readOnly = true)
