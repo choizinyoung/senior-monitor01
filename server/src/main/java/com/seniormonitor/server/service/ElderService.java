@@ -47,7 +47,7 @@ public class ElderService {
 
     @Transactional(readOnly = true)
     public List<Senior> getAll() {
-        return seniorRepository.findByIsDeleted("N");
+        return seniorRepository.findByIsDeletedOrderByRegisteredAtDesc("N");
     }
 
     @Transactional(readOnly = true)

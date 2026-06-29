@@ -16,7 +16,7 @@ public interface SeniorRepository extends JpaRepository<Senior, Long> {
 
     boolean existsByPhone(String phone);
     long countByIsDeleted(String isDeleted);
-    List<Senior> findByIsDeleted(String isDeleted);
+    List<Senior> findByIsDeletedOrderByRegisteredAtDesc(String isDeleted);
 
     long countByStatusAndIsDeleted(String status, String isDeleted);
 
