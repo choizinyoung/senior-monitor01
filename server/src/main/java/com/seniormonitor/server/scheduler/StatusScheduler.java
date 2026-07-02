@@ -22,8 +22,8 @@ public class StatusScheduler {
         this.signalLogRepository = signalLogRepository;
     }
 
-    // 매일 KST 10:00:30 (UTC 01:00:30) 실행
-    @Scheduled(cron = "30 0 1 * * *")
+    // 매일 KST 10:00:30 실행
+    @Scheduled(cron = "30 0 10 * * *", zone = "Asia/Seoul")
     @Transactional
     public void markNoSignalSeniorsAsDanger() {
         LocalDate today = LocalDate.now();
