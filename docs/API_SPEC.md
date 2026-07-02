@@ -1,6 +1,6 @@
 # 독거노인 안전 관리 시스템 — API 명세서
 
-> 최종 수정: 2026-06-25  
+> 최종 수정: 2026-07-02  
 > Base URL: `http://localhost:8082` (로컬 dev)  
 > 공통 응답 래퍼: `{ "success": true, "data": ..., "error": null }`
 
@@ -8,24 +8,39 @@
 
 ## 목차
 
-| No | API | Method | URL | 설명 |
-|----|-----|--------|-----|------|
-| 1 | [대시보드 통계](#1-대시보드-통계) | GET | `/api/dashboard/stats` | 4대 지표 집계 |
-| 2 | [확인요망 리스트](#2-확인요망-리스트) | GET | `/api/alerts` | 미기상 대상자 목록 (필터링) |
-| 3 | [확인 처리](#3-확인-처리) | POST | `/api/alerts/:id/confirm` | 상태 변경 + 연락 이력 기록 |
-| 4 | [대상자 전체 목록](#4-대상자-전체-목록) | GET | `/api/seniors` | 활성 대상자 목록 |
-| 5 | [대상자 상세](#5-대상자-상세) | GET | `/api/seniors/:id` | 개별 대상자 정보 |
-| 6 | [대상자 등록](#6-대상자-등록) | POST | `/api/seniors/register` | APK 대상자 등록 |
-| 7 | [대상자 수정](#7-대상자-수정) | POST | `/api/seniors/:id/update` | 대상자 정보 수정 |
-| 8 | [대상자 삭제](#8-대상자-삭제-소프트) | DELETE | `/api/seniors/:id` | 소프트 삭제 (is_deleted = Y) |
-| 9 | [연락 이력 조회](#9-연락-이력-조회) | GET | `/api/seniors/:id/contacts` | 대상자별 연락 이력 |
-| 10 | [신호 이력 조회](#10-신호-이력-조회) | GET | `/api/seniors/:id/signals` | 대상자별 기상 신호 이력 |
-| 11 | [기상 신호 수신](#11-기상-신호-수신) | POST | `/api/signal` | APK → 서버 신호 수신 |
-| 12 | [전체 신호 목록](#12-전체-신호-목록) | GET | `/api/signals` | 최근 200건 신호 로그 |
+| No | API | Method | URL | 설명 | 인증 |
+|----|-----|--------|-----|------|------|
+| 1 | [대시보드 통계](#1-대시보드-통계) | GET | `/api/dashboard/stats` | 4대 지표 집계 | 로그인 필요 |
+| 2 | [확인요망 리스트](#2-확인요망-리스트) | GET | `/api/alerts` | 미기상 대상자 목록 (필터링) | 로그인 필요 |
+| 3 | [확인 처리](#3-확인-처리) | POST | `/api/alerts/:id/confirm` | 상태 변경 + 연락 이력 기록 | 로그인 필요 |
+| 4 | [대상자 전체 목록](#4-대상자-전체-목록) | GET | `/api/seniors` | 활성 대상자 목록 | 로그인 필요 |
+| 5 | [대상자 상세](#5-대상자-상세) | GET | `/api/seniors/:id` | 개별 대상자 정보 | 로그인 필요 |
+| 6 | [대상자 등록](#6-대상자-등록) | POST | `/api/seniors/register` | APK 대상자 등록 | 공개 (APK) |
+| 7 | [대상자 수정](#7-대상자-수정) | POST | `/api/seniors/:id/update` | 대상자 정보 수정 | 공개 (APK) |
+| 8 | [대상자 삭제](#8-대상자-삭제-소프트) | DELETE | `/api/seniors/:id` | 소프트 삭제 (is_deleted = Y) | 로그인 필요 |
+| 9 | [연락 이력 조회](#9-연락-이력-조회) | GET | `/api/seniors/:id/contacts` | 대상자별 연락 이력 | 로그인 필요 |
+| 10 | [신호 이력 조회](#10-신호-이력-조회) | GET | `/api/seniors/:id/signals` | 대상자별 기상 신호 이력 | 로그인 필요 |
+| 11 | [기상 신호 수신](#11-기상-신호-수신) | POST | `/api/signal` | APK → 서버 신호 수신 | 공개 (APK) |
+| 12 | [전체 신호 목록](#12-전체-신호-목록) | GET | `/api/signals` | 최근 200건 신호 로그 | 로그인 필요 |
+| 13 | [회원가입 신청](#13-회원가입-신청) | POST | `/api/auth/signup` | 담당자 계정 신청 | 공개 |
+| 14 | [로그인](#14-로그인) | POST | `/api/auth/login` | JWT 토큰 발급 | 공개 |
+| 15 | [로그아웃](#15-로그아웃) | POST | `/api/auth/logout` | 현재 토큰 무효화 | 로그인 필요 |
+| 16 | [담당자 목록 조회](#16-담당자-목록-조회) | GET | `/api/managers` | 승인 전/후 담당자 목록 | MASTER 전용 |
+| 17 | [담당자 정보 변경](#17-담당자-정보-변경) | POST | `/api/managers/:id/update` | 승인/승인해제, 관할지역 변경 | MASTER 전용 |
 
 ---
 
 ## 공통 사항
+
+### 인증
+
+로그인이 필요한 API는 `Authorization: Bearer {token}` 헤더로 로그인 시 발급받은 JWT를 전달해야 합니다.
+
+- 담당자(MANAGER)가 대상자 조회 API를 호출하면 **본인의 관할지역(gu/dong)에 속한 대상자만** 조회됩니다. 관할지역을 아직 배정받지 못한 담당자는 빈 목록/0건 통계를 받습니다.
+- MASTER는 지역 제한 없이 전체 데이터를 조회합니다.
+- 담당자가 관할지역 밖의 대상자를 단건 조회/삭제/확인처리 시도하면 `ERR_FORBIDDEN_REGION` (403)을 반환합니다.
+- `/api/managers/**`는 MASTER 권한만 호출 가능하며, 그 외 역할로 호출 시 `ERR_FORBIDDEN` (403)을 반환합니다.
+- `/api/seniors/register`, `/api/seniors/:id/update`, `/api/signal` (및 레거시 `/register`, `/signal`)은 APK 기기가 호출하는 엔드포인트로 인증 없이 공개되어 있습니다. 로그인 없이 호출되면 관할지역 제한도 적용되지 않습니다.
 
 ### 응답 형식
 
@@ -62,8 +77,15 @@
 | `ERR_CANNOT_DELETE` | 400 | 확인요망 상태 대상자 삭제 불가 |
 | `ERR_DUPLICATE` | 409 | 이미 등록된 기기 |
 | `ERR_DUPLICATE_PHONE` | 409 | 이미 등록된 연락처 |
-| `ERR_NOT_FOUND` | 404 | 대상자를 찾을 수 없음 |
+| `ERR_DUPLICATE_USERNAME` | 409 | 이미 사용 중인 아이디 |
+| `ERR_DUPLICATE_EMAIL` | 409 | 이미 사용 중인 이메일 |
+| `ERR_NOT_FOUND` | 404 | 대상자/담당자를 찾을 수 없음 |
 | `ERR_UNREGISTERED_DEVICE` | 404 | 등록되지 않은 기기 |
+| `ERR_UNAUTHORIZED` | 401 | 로그인(토큰)이 필요함 |
+| `ERR_INVALID_CREDENTIALS` | 401 | 아이디/비밀번호 불일치 |
+| `ERR_NOT_APPROVED` | 403 | 아직 승인되지 않은 계정으로 로그인 시도 |
+| `ERR_FORBIDDEN` | 403 | 권한 없는 API 접근 (예: MANAGER가 /api/managers 호출) |
+| `ERR_FORBIDDEN_REGION` | 403 | 담당자의 관할지역 밖의 대상자 접근 |
 
 ### SENIOR 테이블 상태값
 
@@ -303,12 +325,13 @@ APK에서 대상자를 등록합니다.
 
 ## 7. 대상자 수정
 
-대상자의 기본 정보를 수정합니다.
+대상자의 기본 정보를 수정합니다. APK에서 호출하는 공개 API로, 로그인이 필요하지 않습니다.
 
 | 항목 | 내용 |
 |------|------|
 | **Method** | `POST` |
 | **URL** | `/api/seniors/{seniorId}/update` |
+| **인증** | 불필요 (공개) |
 
 ### Request Body
 
@@ -473,6 +496,221 @@ APK에서 기상 신호를 서버로 전송합니다.
 
 ---
 
+## 13. 회원가입 신청
+
+담당자가 계정을 신청합니다. 신청 직후에는 `status = PENDING`이며, MASTER가 승인해야 로그인할 수 있습니다.
+
+| 항목 | 내용 |
+|------|------|
+| **Method** | `POST` |
+| **URL** | `/api/auth/signup` |
+| **HTTP Status** | `201 Created` |
+
+### Request Body
+
+```json
+{
+  "name": "홍길동",
+  "username": "hong123",
+  "password": "P@ssw0rd!",
+  "phone": "010-1234-5678",
+  "email": "hong@example.com"
+}
+```
+
+| 필드 | 타입 | 필수 | 설명 |
+|------|------|------|------|
+| `name` | `string` | Y | 담당자 이름 |
+| `username` | `string` | Y | 로그인 아이디 (중복 불가) |
+| `password` | `string` | Y | 비밀번호 (해시 저장) |
+| `phone` | `string` | Y | 연락처 |
+| `email` | `string` | Y | 이메일 (중복 불가) |
+
+관할 지역(city/gu/dong)과 권한(role)은 신청 시 입력받지 않으며, role은 `MANAGER`, status는 `PENDING`으로 자동 설정됩니다.
+
+### 응답
+
+```json
+{
+  "success": true,
+  "data": {
+    "id": 4,
+    "name": "홍길동",
+    "username": "hong123",
+    "phone": "010-1234-5678",
+    "email": "hong@example.com",
+    "city": null,
+    "gu": null,
+    "dong": null,
+    "role": "MANAGER",
+    "status": "PENDING",
+    "createdAt": "2026-07-02T10:00:00",
+    "updatedAt": "2026-07-02T10:00:00"
+  }
+}
+```
+
+### 에러
+
+- `ERR_MISSING_FIELD` (400): 필수 필드 누락
+- `ERR_DUPLICATE_USERNAME` (409): 이미 사용 중인 아이디
+- `ERR_DUPLICATE_EMAIL` (409): 이미 사용 중인 이메일
+
+---
+
+## 14. 로그인
+
+아이디/비밀번호를 검증하고 JWT 토큰을 발급합니다.
+
+| 항목 | 내용 |
+|------|------|
+| **Method** | `POST` |
+| **URL** | `/api/auth/login` |
+
+### Request Body
+
+```json
+{
+  "username": "hong123",
+  "password": "P@ssw0rd!"
+}
+```
+
+### 응답
+
+```json
+{
+  "success": true,
+  "data": {
+    "token": "eyJhbGciOiJIUzM4NCJ9...",
+    "manager": {
+      "id": 4,
+      "name": "홍길동",
+      "username": "hong123",
+      "phone": "010-1234-5678",
+      "email": "hong@example.com",
+      "city": "서울특별시",
+      "gu": "노원구",
+      "dong": null,
+      "role": "MANAGER",
+      "status": "APPROVED",
+      "createdAt": "2026-07-02T10:00:00",
+      "updatedAt": "2026-07-02T11:00:00"
+    }
+  }
+}
+```
+
+이후 요청은 `Authorization: Bearer {token}` 헤더로 인증합니다.
+
+### 에러
+
+- `ERR_MISSING_FIELD` (400): 필수 필드 누락
+- `ERR_INVALID_CREDENTIALS` (401): 아이디 또는 비밀번호 불일치
+- `ERR_NOT_APPROVED` (403): 아직 승인되지 않은 계정 (`status != APPROVED`)
+
+---
+
+## 15. 로그아웃
+
+현재 사용 중인 토큰을 즉시 무효화합니다. 로그아웃 이후 같은 토큰으로 다시 요청하면 `ERR_UNAUTHORIZED` (401)이 반환됩니다.
+
+| 항목 | 내용 |
+|------|------|
+| **Method** | `POST` |
+| **URL** | `/api/auth/logout` |
+| **인증** | `Authorization: Bearer {token}` 필요 |
+
+### Request Body
+
+없음 (헤더의 토큰만 사용)
+
+### 응답
+
+```json
+{
+  "success": true,
+  "data": null,
+  "error": null
+}
+```
+
+### 동작 방식
+
+JWT는 서버에 상태를 저장하지 않는 방식이라 발급 후에는 만료 전까지 유효한 것이 원칙이지만, 이 API는 호출된 토큰의 고유값(jti)을 서버의 무효화 목록(REVOKED_TOKEN 테이블)에 기록해 즉시 재사용을 막습니다. 무효화된 토큰은 자연 만료 시점이 지나면 배치로 정리됩니다.
+
+### 에러
+
+- `ERR_UNAUTHORIZED` (401): 로그인하지 않은 상태(토큰 없음/만료/이미 로그아웃됨)로 호출
+
+---
+
+## 16. 담당자 목록 조회
+
+승인 전/후 담당자를 모두 포함한 목록을 조회합니다. MASTER 전용 API입니다.
+
+| 항목 | 내용 |
+|------|------|
+| **Method** | `GET` |
+| **URL** | `/api/managers` |
+
+### Query Parameters
+
+| 파라미터 | 타입 | 필수 | 설명 |
+|----------|------|------|------|
+| `status` | `string` | N | `PENDING` / `APPROVED` 필터 |
+
+### 응답
+
+ManagerResponse 배열 (비밀번호 제외, 14번과 동일한 형태)
+
+### 에러
+
+- `ERR_FORBIDDEN` (403): MASTER가 아닌 계정으로 호출
+
+---
+
+## 17. 담당자 정보 변경
+
+담당자의 승인 상태(승인/승인해제)와 관할 지역을 변경합니다. MASTER 전용 API입니다.
+
+| 항목 | 내용 |
+|------|------|
+| **Method** | `POST` |
+| **URL** | `/api/managers/{managerId}/update` |
+
+### Request Body
+
+변경할 필드만 전송합니다.
+
+```json
+{
+  "status": "APPROVED",
+  "city": "서울특별시",
+  "gu": "노원구",
+  "dong": "상계동"
+}
+```
+
+| 필드 | 타입 | 필수 | 설명 |
+|------|------|------|------|
+| `status` | `string` | N | `PENDING`(승인해제) / `APPROVED`(승인) |
+| `city` | `string` | N | 관할 시/도 |
+| `gu` | `string` | N | 관할 시/군/구 |
+| `dong` | `string` | N | 관할 읍/면/동 (미입력 시 gu 전체 관할) |
+
+### 응답
+
+수정된 ManagerResponse 반환
+
+### 에러
+
+- `ERR_NOT_FOUND` (404): 담당자를 찾을 수 없음
+- `ERR_INVALID_VALUE` (400): status가 PENDING / APPROVED가 아님
+- `ERR_FORBIDDEN` (403): MASTER가 아닌 계정으로 호출
+
+---
+
 ## ERD 테이블 요약
 
 ### SENIOR (대상자)
@@ -512,3 +750,31 @@ APK에서 기상 신호를 서버로 전송합니다.
 | `memo` | VARCHAR(500) | 메모 |
 | `contacted_at` | TIMESTAMP NOT NULL | 연락 시각 |
 | `created_at` | TIMESTAMP NOT NULL | 기록 생성 시각 |
+
+### MANAGER (담당자 계정)
+
+| 컬럼 | 타입 | 설명 |
+|------|------|------|
+| `id` | BIGINT PK | 고유 ID |
+| `name` | VARCHAR(20) NOT NULL | 담당자 이름 |
+| `username` | VARCHAR(50) UNIQUE NOT NULL | 로그인 아이디 |
+| `password` | VARCHAR NOT NULL | 비밀번호 해시 (BCrypt) |
+| `phone` | VARCHAR(20) NOT NULL | 연락처 |
+| `email` | VARCHAR(100) UNIQUE NOT NULL | 이메일 |
+| `city` | VARCHAR(20) | 관할 시/도 (미배정 시 NULL) |
+| `gu` | VARCHAR(20) | 관할 시/군/구 (미배정 시 NULL) |
+| `dong` | VARCHAR(20) | 관할 읍/면/동 (NULL이면 gu 전체 관할) |
+| `role` | VARCHAR(10) NOT NULL | 권한 (`MASTER` / `MANAGER`) |
+| `status` | VARCHAR(10) NOT NULL | 승인 상태 (`PENDING` / `APPROVED`) |
+| `created_at` | TIMESTAMP NOT NULL | 가입 신청일시 |
+| `updated_at` | TIMESTAMP NOT NULL | 수정일시 |
+
+MASTER 계정은 회원가입 API로 생성되지 않으며, 별도로 발급합니다.
+
+### REVOKED_TOKEN (로그아웃된 토큰 목록)
+
+| 컬럼 | 타입 | 설명 |
+|------|------|------|
+| `id` | BIGINT PK | 고유 ID |
+| `jti` | VARCHAR(100) UNIQUE NOT NULL | 무효화된 토큰의 고유값 (JWT `jti` 클레임) |
+| `expires_at` | TIMESTAMP NOT NULL | 원래 토큰의 만료 시각 (이후 배치로 정리됨) |

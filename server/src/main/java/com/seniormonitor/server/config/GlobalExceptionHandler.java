@@ -3,7 +3,9 @@ package com.seniormonitor.server.config;
 import com.seniormonitor.server.dto.ApiResponse;
 import com.seniormonitor.server.exception.BadRequestException;
 import com.seniormonitor.server.exception.ConflictException;
+import com.seniormonitor.server.exception.ForbiddenException;
 import com.seniormonitor.server.exception.NotFoundException;
+import com.seniormonitor.server.exception.UnauthorizedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -31,6 +33,18 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ConflictException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
     public ApiResponse<?> handleConflict(ConflictException e) {
+        return ApiResponse.fail(e.getCode(), e.getMessage());
+    }
+
+    @ExceptionHandler(UnauthorizedException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public ApiResponse<?> handleUnauthorized(UnauthorizedException e) {
+        return ApiResponse.fail(e.getCode(), e.getMessage());
+    }
+
+    @ExceptionHandler(ForbiddenException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public ApiResponse<?> handleForbidden(ForbiddenException e) {
         return ApiResponse.fail(e.getCode(), e.getMessage());
     }
 

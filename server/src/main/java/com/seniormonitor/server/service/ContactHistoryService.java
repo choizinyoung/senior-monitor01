@@ -8,6 +8,8 @@ import com.seniormonitor.server.exception.BadRequestException;
 import com.seniormonitor.server.exception.NotFoundException;
 import com.seniormonitor.server.repository.ContactHistoryRepository;
 import com.seniormonitor.server.repository.SeniorRepository;
+import com.seniormonitor.server.security.CurrentManager;
+import com.seniormonitor.server.security.RegionAccess;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,21 +33,31 @@ public class ContactHistoryService {
         this.seniorRepository = seniorRepository;
     }
 
-    public List<ContactHistory> getHistory(Long seniorId) {
+    public List<ContactHistory> getHistory(Long seniorId, CurrentManager manager) {
+        Senior senior = seniorRepository.findById(seniorId)
+                .orElseThrow(() -> new NotFoundException("ERR_NOT_FOUND", "대상자를 찾을 수 없습니다."));
+        RegionAccess.assertAccessible(senior, manager);
         return contactHistoryRepository.findBySeniorIdOrderByContactedAtDesc(seniorId);
     }
 
-    public List<ContactHistoryResponse> getAllHistory(String resultStatus) {
+    public List<ContactHistoryResponse> getAllHistory(String resultStatus, CurrentManager manager) {
+        if (RegionAccess.isUnassigned(manager)) {
+            return List.of();
+        }
+        String gu = RegionAccess.guFilter(manager);
+        String dong = RegionAccess.dongFilter(manager);
+
         List<ContactHistory> list = resultStatus != null
-                ? contactHistoryRepository.findAllWithSeniorByStatus(resultStatus)
-                : contactHistoryRepository.findAllWithSenior();
+                ? contactHistoryRepository.findAllWithSeniorByStatusAndRegion(resultStatus, gu, dong)
+                : contactHistoryRepository.findAllWithSeniorByRegion(gu, dong);
         return list.stream().map(ContactHistoryResponse::new).toList();
     }
 
     @Transactional
-    public Senior confirm(Long seniorId, ConfirmRequest req) {
+    public Senior confirm(Long seniorId, ConfirmRequest req, CurrentManager manager) {
         Senior senior = seniorRepository.findById(seniorId)
                 .orElseThrow(() -> new NotFoundException("ERR_NOT_FOUND", "대상자를 찾을 수 없습니다."));
+        RegionAccess.assertAccessible(senior, manager);
 
         if ("정상".equals(senior.getStatus())) {
             throw new BadRequestException("ERR_INVALID_STATUS", "정상 상태인 대상자는 처리 결과를 변경할 수 없습니다.");

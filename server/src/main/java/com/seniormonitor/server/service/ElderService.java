@@ -7,6 +7,8 @@ import com.seniormonitor.server.exception.BadRequestException;
 import com.seniormonitor.server.exception.ConflictException;
 import com.seniormonitor.server.exception.NotFoundException;
 import com.seniormonitor.server.repository.SeniorRepository;
+import com.seniormonitor.server.security.CurrentManager;
+import com.seniormonitor.server.security.RegionAccess;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -46,19 +48,25 @@ public class ElderService {
     }
 
     @Transactional(readOnly = true)
-    public List<Senior> getAll() {
-        return seniorRepository.findByIsDeletedOrderByRegisteredAtDesc("N");
+    public List<Senior> getAll(CurrentManager manager) {
+        if (RegionAccess.isUnassigned(manager)) {
+            return List.of();
+        }
+        return seniorRepository.findActiveByRegion(RegionAccess.guFilter(manager), RegionAccess.dongFilter(manager));
     }
 
     @Transactional(readOnly = true)
-    public Senior getById(Long id) {
-        return seniorRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("ERR_NOT_FOUND", "대상자를 찾을 수 없습니다."));
-    }
-
-    public Senior update(Long id, UpdateSeniorRequest req) {
+    public Senior getById(Long id, CurrentManager manager) {
         Senior senior = seniorRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("ERR_NOT_FOUND", "대상자를 찾을 수 없습니다."));
+        RegionAccess.assertAccessible(senior, manager);
+        return senior;
+    }
+
+    public Senior update(Long id, UpdateSeniorRequest req, CurrentManager manager) {
+        Senior senior = seniorRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("ERR_NOT_FOUND", "대상자를 찾을 수 없습니다."));
+        RegionAccess.assertAccessible(senior, manager);
 
         if (req.getName()  != null) senior.setName(req.getName());
         if (req.getAge()   != null) senior.setAge(req.getAge());
@@ -70,9 +78,10 @@ public class ElderService {
         return seniorRepository.save(senior);
     }
 
-    public void softDelete(Long id) {
+    public void softDelete(Long id, CurrentManager manager) {
         Senior senior = seniorRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("ERR_NOT_FOUND", "대상자를 찾을 수 없습니다."));
+        RegionAccess.assertAccessible(senior, manager);
 
         if ("확인요망".equals(senior.getStatus())) {
             throw new BadRequestException("ERR_CANNOT_DELETE", "확인요망 상태의 대상자는 삭제할 수 없습니다.");

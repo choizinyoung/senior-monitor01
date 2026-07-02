@@ -153,7 +153,8 @@ cp launch.json.example launch.json
         "DB_URL": "jdbc:postgresql://[호스트]:[포트]/railway",
         "DB_USERNAME": "postgres",
         "DB_PASSWORD": "[비밀번호]",
-        "PORT": "8080"
+        "PORT": "8080",
+        "JWT_SECRET": "[32자 이상의 임의의 안전한 문자열]"
       }
     }
   ]
@@ -259,12 +260,12 @@ cd server
 
 **Windows (PowerShell):**
 ```powershell
-$env:DB_URL="jdbc:postgresql://호스트:포트/railway"; $env:DB_USERNAME="postgres"; $env:DB_PASSWORD="비밀번호"; .\gradlew.bat bootRun
+$env:DB_URL="jdbc:postgresql://호스트:포트/railway"; $env:DB_USERNAME="postgres"; $env:DB_PASSWORD="비밀번호"; $env:JWT_SECRET="32자 이상의 임의의 안전한 문자열"; .\gradlew.bat bootRun
 ```
 
 **Mac/Linux:**
 ```bash
-DB_URL="jdbc:postgresql://호스트:포트/railway" DB_USERNAME="postgres" DB_PASSWORD="비밀번호" ./gradlew bootRun
+DB_URL="jdbc:postgresql://호스트:포트/railway" DB_USERNAME="postgres" DB_PASSWORD="비밀번호" JWT_SECRET="32자 이상의 임의의 안전한 문자열" ./gradlew bootRun
 ```
 
 ### 실행 성공 확인
@@ -367,7 +368,10 @@ DB_URL=${{Postgres.DATABASE_URL}}
 DB_USERNAME=${{Postgres.PGUSER}}
 DB_PASSWORD=${{Postgres.PGPASSWORD}}
 PORT=8080
+JWT_SECRET=[32자 이상의 임의의 안전한 문자열]
 ```
+
+`JWT_SECRET`은 로그인 토큰 서명에 쓰이는 값으로, 노출되면 안 되는 비밀값입니다. 로컬 `launch.json`과 다른 값으로 배포 환경에서 새로 생성해서 등록합니다.
 
 (서비스 이름이 `Postgres`가 아니라면 실제 PostgreSQL 서비스명으로 바꿔야 합니다. Railway `Variables` 탭에서 `New Variable` 추가 시 `Reference`로 다른 서비스 변수를 선택할 수 있습니다.)
 
@@ -400,6 +404,7 @@ https://[기존에 생성한 도메인]/signals
 | 테이블이 안 생성됨 | `application.properties`의 `ddl-auto` 설정 누락 | `spring.jpa.hibernate.ddl-auto=update` 확인 |
 | 대시보드 화면이 안 뜸 | HTML 파일이 `static` 폴더에 없음 | `dashboard` 폴더 내용을 `server/src/main/resources/static/`로 복사했는지 확인 |
 | 포트 충돌 (`Port already in use`) | 8080 포트를 다른 프로그램이 사용 중 | 기존에 실행 중인 서버를 정지하거나 `PORT` 환경변수를 다른 값으로 변경 |
+| 서버 실행 시 `JWT_SECRET` 관련 오류 | 로그인 기능(JWT)에 필요한 `JWT_SECRET` 환경변수 미설정 | `launch.json` 또는 실행 명령에 `JWT_SECRET`(32자 이상 임의 문자열) 추가. `dev` 프로파일은 `application-dev.properties`에 기본값이 있어 생략 가능 |
 
 ## 참고
 

@@ -15,16 +15,40 @@ public interface SeniorRepository extends JpaRepository<Senior, Long> {
     Optional<Senior> findByDeviceId(String deviceId);
 
     boolean existsByPhone(String phone);
-    long countByIsDeleted(String isDeleted);
-    List<Senior> findByIsDeletedOrderByRegisteredAtDesc(String isDeleted);
 
-    long countByStatusAndIsDeleted(String status, String isDeleted);
+    // gu/dong이 null이면 해당 조건 없이 전체(MASTER), 값이 있으면 해당 지역으로 제한(MANAGER)
+    @Query("""
+        SELECT COUNT(s) FROM Senior s
+        WHERE s.isDeleted = 'N'
+          AND (:gu IS NULL OR s.gu = :gu)
+          AND (:dong IS NULL OR s.dong = :dong)
+        """)
+    long countActiveByRegion(@Param("gu") String gu, @Param("dong") String dong);
 
-    List<Senior> findByStatusAndIsDeleted(String status, String isDeleted);
+    @Query("""
+        SELECT COUNT(s) FROM Senior s
+        WHERE s.status = :status AND s.isDeleted = 'N'
+          AND (:gu IS NULL OR s.gu = :gu)
+          AND (:dong IS NULL OR s.dong = :dong)
+        """)
+    long countByStatusAndRegion(@Param("status") String status, @Param("gu") String gu, @Param("dong") String dong);
 
-    List<Senior> findByStatusAndIsDeletedAndGu(String status, String isDeleted, String gu);
+    @Query("""
+        SELECT s FROM Senior s
+        WHERE s.isDeleted = 'N'
+          AND (:gu IS NULL OR s.gu = :gu)
+          AND (:dong IS NULL OR s.dong = :dong)
+        ORDER BY s.registeredAt DESC
+        """)
+    List<Senior> findActiveByRegion(@Param("gu") String gu, @Param("dong") String dong);
 
-    List<Senior> findByStatusAndIsDeletedAndGuAndDong(String status, String isDeleted, String gu, String dong);
+    @Query("""
+        SELECT s FROM Senior s
+        WHERE s.status = :status AND s.isDeleted = 'N'
+          AND (:gu IS NULL OR s.gu = :gu)
+          AND (:dong IS NULL OR s.dong = :dong)
+        """)
+    List<Senior> findByStatusAndRegion(@Param("status") String status, @Param("gu") String gu, @Param("dong") String dong);
 
     @Modifying
     @Query("""

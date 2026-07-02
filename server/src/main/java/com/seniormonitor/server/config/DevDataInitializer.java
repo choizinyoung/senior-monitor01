@@ -1,13 +1,16 @@
 package com.seniormonitor.server.config;
 
 import com.seniormonitor.server.entity.ContactHistory;
+import com.seniormonitor.server.entity.Manager;
 import com.seniormonitor.server.entity.Senior;
 import com.seniormonitor.server.entity.SignalLog;
 import com.seniormonitor.server.repository.ContactHistoryRepository;
+import com.seniormonitor.server.repository.ManagerRepository;
 import com.seniormonitor.server.repository.SeniorRepository;
 import com.seniormonitor.server.repository.SignalLogRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
@@ -21,17 +24,34 @@ public class DevDataInitializer implements CommandLineRunner {
     private final SeniorRepository seniorRepository;
     private final SignalLogRepository signalLogRepository;
     private final ContactHistoryRepository contactHistoryRepository;
+    private final ManagerRepository managerRepository;
+    private final PasswordEncoder passwordEncoder;
 
     public DevDataInitializer(SeniorRepository seniorRepository,
                                SignalLogRepository signalLogRepository,
-                               ContactHistoryRepository contactHistoryRepository) {
+                               ContactHistoryRepository contactHistoryRepository,
+                               ManagerRepository managerRepository,
+                               PasswordEncoder passwordEncoder) {
         this.seniorRepository = seniorRepository;
         this.signalLogRepository = signalLogRepository;
         this.contactHistoryRepository = contactHistoryRepository;
+        this.managerRepository = managerRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
     public void run(String... args) {
+        // ── 테스트용 계정 (dev 전용) ──────────────────────────────────
+        // MASTER: master / master1234!  (전체 지역 조회)
+        saveManager("마스터", "master", "master1234!", "010-0000-0001",
+                "master@seniormonitor.dev", "서울특별시", null, null, "MASTER", "APPROVED");
+        // 승인된 담당자: manager1 / manager1234!  (노원구만 조회)
+        saveManager("김담당", "manager1", "manager1234!", "010-0000-0002",
+                "manager1@seniormonitor.dev", "서울특별시", "노원구", null, "MANAGER", "APPROVED");
+        // 승인 대기 담당자: manager2 / manager1234!  (지역 미배정)
+        saveManager("이담당", "manager2", "manager1234!", "010-0000-0003",
+                "manager2@seniormonitor.dev", null, null, null, "MANAGER", "PENDING");
+
         String today      = LocalDate.now().toString();
         String yesterday  = LocalDate.now().minusDays(1).toString();
         String twoDaysAgo = LocalDate.now().minusDays(2).toString();
@@ -161,6 +181,22 @@ public class DevDataInitializer implements CommandLineRunner {
         saveContact(emergency.get(1), "김담당", "응급호출",     "자녀 신고, 의식 불명으로 병원 이송",      LocalDateTime.now().minusHours(3));
         saveContact(emergency.get(2), "이담당", "확인요망",     "수신 없음",                               LocalDateTime.now().minusHours(8));
         saveContact(emergency.get(2), "이담당", "응급호출",     "이웃 신고, 낙상으로 119 출동",            LocalDateTime.now().minusHours(7));
+    }
+
+    private void saveManager(String name, String username, String rawPassword, String phone, String email,
+                              String city, String gu, String dong, String role, String status) {
+        Manager manager = new Manager();
+        manager.setName(name);
+        manager.setUsername(username);
+        manager.setPassword(passwordEncoder.encode(rawPassword));
+        manager.setPhone(phone);
+        manager.setEmail(email);
+        manager.setCity(city);
+        manager.setGu(gu);
+        manager.setDong(dong);
+        manager.setRole(role);
+        manager.setStatus(status);
+        managerRepository.save(manager);
     }
 
     private Senior saveSenior(String deviceId, String name, int age,

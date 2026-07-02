@@ -6,6 +6,8 @@ import com.seniormonitor.server.entity.SignalLog;
 import com.seniormonitor.server.exception.NotFoundException;
 import com.seniormonitor.server.repository.SeniorRepository;
 import com.seniormonitor.server.repository.SignalLogRepository;
+import com.seniormonitor.server.security.CurrentManager;
+import com.seniormonitor.server.security.RegionAccess;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -40,14 +42,22 @@ public class SignalService {
     }
 
     @Transactional(readOnly = true)
-    public List<SignalLog> getRecent(LocalDate from, LocalDate to) {
+    public List<SignalLog> getRecent(LocalDate from, LocalDate to, CurrentManager manager) {
+        if (RegionAccess.isUnassigned(manager)) {
+            return List.of();
+        }
         LocalDateTime start = (from != null ? from : LocalDate.now()).atStartOfDay();
         LocalDateTime end   = (to   != null ? to   : LocalDate.now()).atTime(LocalTime.MAX);
-        return signalLogRepository.findByReceivedAtBetweenOrderByReceivedAtDesc(start, end);
+        return signalLogRepository.findByReceivedAtBetweenAndRegionOrderByReceivedAtDesc(
+                start, end, RegionAccess.guFilter(manager), RegionAccess.dongFilter(manager));
     }
 
     @Transactional(readOnly = true)
-    public List<SignalLog> getSignalsBySenior(Long seniorId, LocalDate from, LocalDate to) {
+    public List<SignalLog> getSignalsBySenior(Long seniorId, LocalDate from, LocalDate to, CurrentManager manager) {
+        Senior senior = seniorRepository.findById(seniorId)
+                .orElseThrow(() -> new NotFoundException("ERR_NOT_FOUND", "대상자를 찾을 수 없습니다."));
+        RegionAccess.assertAccessible(senior, manager);
+
         LocalDateTime start = (from != null ? from : LocalDate.now()).atStartOfDay();
         LocalDateTime end   = (to   != null ? to   : LocalDate.now()).atTime(LocalTime.MAX);
         return signalLogRepository.findBySeniorIdAndReceivedAtBetweenOrderByReceivedAtDesc(seniorId, start, end);
