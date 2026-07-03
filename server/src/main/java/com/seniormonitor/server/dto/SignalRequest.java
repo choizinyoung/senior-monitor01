@@ -7,4 +7,5 @@ import lombok.Setter;
 @Setter
 public class SignalRequest {
     private String deviceId;
+    private String status;
 }
