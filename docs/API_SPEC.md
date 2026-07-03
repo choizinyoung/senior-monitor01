@@ -27,6 +27,7 @@
 | 15 | [로그아웃](#15-로그아웃) | POST | `/api/auth/logout` | 현재 토큰 무효화 | 로그인 필요 |
 | 16 | [담당자 목록 조회](#16-담당자-목록-조회) | GET | `/api/managers` | 승인 전/후 담당자 목록 | MASTER 전용 |
 | 17 | [담당자 정보 변경](#17-담당자-정보-변경) | POST | `/api/managers/:id/update` | 승인/승인해제, 관할지역 변경 | MASTER 전용 |
+| 18 | [크래시 로그 제출](#18-크래시-로그-제출) | POST | `/api/crash-logs` | APK 크래시 로그 수신 | 공개 (APK) |
 
 ---
 
@@ -40,7 +41,7 @@
 - MASTER는 지역 제한 없이 전체 데이터를 조회합니다.
 - 담당자가 관할지역 밖의 대상자를 단건 조회/삭제/확인처리 시도하면 `ERR_FORBIDDEN_REGION` (403)을 반환합니다.
 - `/api/managers/**`는 MASTER 권한만 호출 가능하며, 그 외 역할로 호출 시 `ERR_FORBIDDEN` (403)을 반환합니다.
-- `/api/seniors/register`, `/api/seniors/:id/update`, `/api/signal` (및 레거시 `/register`, `/signal`)은 APK 기기가 호출하는 엔드포인트로 인증 없이 공개되어 있습니다. 로그인 없이 호출되면 관할지역 제한도 적용되지 않습니다.
+- `/api/seniors/register`, `/api/seniors/:id/update`, `/api/signal`, `/api/crash-logs` (및 레거시 `/register`, `/signal`)은 APK 기기가 호출하는 엔드포인트로 인증 없이 공개되어 있습니다. 로그인 없이 호출되면 관할지역 제한도 적용되지 않습니다.
 
 ### 응답 형식
 
@@ -454,15 +455,26 @@ APK에서 기상 신호를 서버로 전송합니다.
 
 ```json
 {
-  "deviceId": "DEVICE-ABC-123"
+  "deviceId": "DEVICE-ABC-123",
+  "status": "정상"
 }
 ```
+
+| 필드 | 타입 | 필수 | 설명 |
+|------|------|------|------|
+| `deviceId` | `string` | Y | APK 기기 고유값 |
+| `status` | `string` | N | 대상자 상태 변경값. `정상` / `확인요망` / `확인완료` / `확인요망유지` / `응급호출` 중 하나 |
 
 ### 처리 흐름
 
 1. `deviceId`로 Senior 조회 → 미등록 시 `ERR_UNREGISTERED_DEVICE` (404)
-2. `SIGNAL_LOG` 생성 (`senior_id`, `received_at`, `signal_date`)
-3. 해당 대상자 `status`가 `확인요망`이면 → `정상`으로 자동 전환
+2. `status`가 함께 전달되면 대상자의 `SENIOR.status`를 해당 값으로 변경 (미전달 시 상태는 그대로 유지)
+3. `SIGNAL_LOG` 생성 (`senior_id`, `received_at`, `signal_date`)
+
+### 에러
+
+- `ERR_UNREGISTERED_DEVICE` (404): 등록되지 않은 기기
+- `ERR_INVALID_VALUE` (400): `status`가 허용된 값이 아님
 
 ### 레거시 호환
 
@@ -711,6 +723,53 @@ ManagerResponse 배열 (비밀번호 제외, 14번과 동일한 형태)
 
 ---
 
+## 18. 크래시 로그 제출
+
+APK 앱이 크래시 났을 때 로그를 서버에 기록합니다. 로그인이 필요하지 않은 공개 API입니다. (조회용 API는 아직 없습니다.)
+
+| 항목 | 내용 |
+|------|------|
+| **Method** | `POST` |
+| **URL** | `/api/crash-logs` |
+| **HTTP Status** | `201 Created` |
+| **인증** | 불필요 (공개) |
+
+### Request Body
+
+```json
+{
+  "deviceId": "DEVICE-ABC-123",
+  "message": "java.lang.NullPointerException: ...\n\tat com.example...",
+  "appVersion": "1.2.0",
+  "occurredAt": "2026-07-03T09:12:00"
+}
+```
+
+| 필드 | 타입 | 필수 | 설명 |
+|------|------|------|------|
+| `deviceId` | `string` | Y | APK 기기 고유값 |
+| `message` | `string` | Y | 크래시 로그/스택트레이스 내용 |
+| `appVersion` | `string` | N | 크래시 발생 당시 앱 버전 |
+| `occurredAt` | `string` | N | 크래시 발생 시각 (ISO 형식). 미입력 시 기록 안 함 |
+
+`deviceId`는 `SENIOR` 테이블과 연결(FK)되지 않습니다. 대상자 등록 전에 발생한 크래시도 그대로 기록할 수 있도록 별도 문자열로만 저장합니다.
+
+### 응답
+
+```json
+{
+  "success": true,
+  "data": null,
+  "error": null
+}
+```
+
+### 에러
+
+- `ERR_MISSING_FIELD` (400): deviceId 또는 message 누락
+
+---
+
 ## ERD 테이블 요약
 
 ### SENIOR (대상자)
@@ -778,3 +837,14 @@ MASTER 계정은 회원가입 API로 생성되지 않으며, 별도로 발급합
 | `id` | BIGINT PK | 고유 ID |
 | `jti` | VARCHAR(100) UNIQUE NOT NULL | 무효화된 토큰의 고유값 (JWT `jti` 클레임) |
 | `expires_at` | TIMESTAMP NOT NULL | 원래 토큰의 만료 시각 (이후 배치로 정리됨) |
+
+### CRASH_LOG (크래시 로그)
+
+| 컬럼 | 타입 | 설명 |
+|------|------|------|
+| `id` | BIGINT PK | 고유 ID |
+| `device_id` | VARCHAR(100) NOT NULL | APK 기기 고유값 (SENIOR와 FK 아님) |
+| `message` | TEXT NOT NULL | 크래시 로그/스택트레이스 |
+| `app_version` | VARCHAR(20) | 크래시 발생 당시 앱 버전 |
+| `occurred_at` | TIMESTAMP | 크래시 발생 시각 (클라이언트 제공) |
+| `received_at` | TIMESTAMP NOT NULL | 서버 수신 시각 |

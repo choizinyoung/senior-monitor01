@@ -54,6 +54,7 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/api/auth/signup", "/api/auth/login",
                                 "/api/seniors/register", "/api/seniors/*/update", "/api/signal",
+                                "/api/crash-logs",
                                 "/register", "/signal",
                                 "/h2-console/**"
                         ).permitAll()
