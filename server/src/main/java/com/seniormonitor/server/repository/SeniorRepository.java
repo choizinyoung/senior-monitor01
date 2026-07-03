@@ -21,6 +21,9 @@ public interface SeniorRepository extends JpaRepository<Senior, Long> {
     @Query("SELECT s FROM Senior s WHERE s.isDeleted = 'N' ORDER BY s.registeredAt DESC")
     List<Senior> findAllActive();
 
+    @Query("SELECT s FROM Senior s WHERE s.isDeleted = 'N' AND s.city = :city ORDER BY s.registeredAt DESC")
+    List<Senior> findActiveByCity(@Param("city") String city);
+
     @Query("SELECT s FROM Senior s WHERE s.isDeleted = 'N' AND s.gu = :gu ORDER BY s.registeredAt DESC")
     List<Senior> findActiveByGu(@Param("gu") String gu);
 
@@ -31,6 +34,9 @@ public interface SeniorRepository extends JpaRepository<Senior, Long> {
 
     @Query("SELECT s FROM Senior s WHERE s.status = :status AND s.isDeleted = 'N'")
     List<Senior> findByStatus(@Param("status") String status);
+
+    @Query("SELECT s FROM Senior s WHERE s.status = :status AND s.isDeleted = 'N' AND s.city = :city")
+    List<Senior> findByStatusAndCity(@Param("status") String status, @Param("city") String city);
 
     @Query("SELECT s FROM Senior s WHERE s.status = :status AND s.isDeleted = 'N' AND s.gu = :gu")
     List<Senior> findByStatusAndGu(@Param("status") String status, @Param("gu") String gu);
@@ -43,6 +49,9 @@ public interface SeniorRepository extends JpaRepository<Senior, Long> {
     @Query("SELECT COUNT(s) FROM Senior s WHERE s.isDeleted = 'N'")
     long countAllActive();
 
+    @Query("SELECT COUNT(s) FROM Senior s WHERE s.isDeleted = 'N' AND s.city = :city")
+    long countActiveByCity(@Param("city") String city);
+
     @Query("SELECT COUNT(s) FROM Senior s WHERE s.isDeleted = 'N' AND s.gu = :gu")
     long countActiveByGu(@Param("gu") String gu);
 
@@ -51,6 +60,9 @@ public interface SeniorRepository extends JpaRepository<Senior, Long> {
 
     @Query("SELECT COUNT(s) FROM Senior s WHERE s.status = :status AND s.isDeleted = 'N'")
     long countByStatus(@Param("status") String status);
+
+    @Query("SELECT COUNT(s) FROM Senior s WHERE s.status = :status AND s.isDeleted = 'N' AND s.city = :city")
+    long countByStatusAndCity(@Param("status") String status, @Param("city") String city);
 
     @Query("SELECT COUNT(s) FROM Senior s WHERE s.status = :status AND s.isDeleted = 'N' AND s.gu = :gu")
     long countByStatusAndGu(@Param("status") String status, @Param("gu") String gu);

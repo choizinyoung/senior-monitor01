@@ -90,7 +90,7 @@ public class ContactHistoryService {
 
         String seniorStatus = switch (req.getResultStatus()) {
             case "확인완료" -> "정상";
-            case "확인요망유지" -> "확인요망";
+            case "확인요망유지" -> "확인요망유지";
             default -> req.getResultStatus();
         };
         senior.setStatus(seniorStatus);

@@ -30,11 +30,13 @@ public class DashboardService {
             return new DashboardStatsResponse(0, 0, 0, 0);
         }
 
+        String city = RegionAccess.cityFilter(manager);
         String gu   = RegionAccess.guFilter(manager);
         String dong = RegionAccess.dongFilter(manager);
 
-        long totalSeniors        = countActive(gu, dong);
-        long alertCount          = countByStatus("확인요망", gu, dong);
+        long totalSeniors        = countActive(city, gu, dong);
+        long alertCount          = countByStatus("확인요망", city, gu, dong)
+                                 + countByStatus("확인요망유지", city, gu, dong);
         LocalDateTime startOfDay = LocalDateTime.of(LocalDate.now(), LocalTime.MIN);
         long confirmedTodayCount = countContact("확인완료", startOfDay, gu, dong);
         long emergencyTodayCount = countContact("응급호출", startOfDay, gu, dong);
@@ -42,15 +44,17 @@ public class DashboardService {
         return new DashboardStatsResponse(totalSeniors, alertCount, confirmedTodayCount, emergencyTodayCount);
     }
 
-    private long countActive(String gu, String dong) {
+    private long countActive(String city, String gu, String dong) {
         if (gu != null && dong != null) return seniorRepository.countActiveByGuAndDong(gu, dong);
         if (gu != null)                 return seniorRepository.countActiveByGu(gu);
+        if (city != null)               return seniorRepository.countActiveByCity(city);
         return seniorRepository.countAllActive();
     }
 
-    private long countByStatus(String status, String gu, String dong) {
+    private long countByStatus(String status, String city, String gu, String dong) {
         if (gu != null && dong != null) return seniorRepository.countByStatusAndGuAndDong(status, gu, dong);
         if (gu != null)                 return seniorRepository.countByStatusAndGu(status, gu);
+        if (city != null)               return seniorRepository.countByStatusAndCity(status, city);
         return seniorRepository.countByStatus(status);
     }
 

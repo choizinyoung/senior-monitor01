@@ -52,10 +52,12 @@ public class ElderService {
         if (RegionAccess.isUnassigned(manager)) {
             return List.of();
         }
+        String city = RegionAccess.cityFilter(manager);
         String gu   = RegionAccess.guFilter(manager);
         String dong = RegionAccess.dongFilter(manager);
         if (gu != null && dong != null) return seniorRepository.findActiveByGuAndDong(gu, dong);
         if (gu != null)                 return seniorRepository.findActiveByGu(gu);
+        if (city != null)               return seniorRepository.findActiveByCity(city);
         return seniorRepository.findAllActive();
     }
 

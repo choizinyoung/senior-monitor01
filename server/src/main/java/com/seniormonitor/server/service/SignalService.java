@@ -47,7 +47,12 @@ public class SignalService {
             }
             senior.setStatus(req.getStatus());
             seniorRepository.save(senior);
+        } else if ("확인요망".equals(senior.getStatus())) {
+            // APK가 status를 별도로 보내지 않아도 신호 수신 시 확인요망 → 정상 자동 해제
+            senior.setStatus("정상");
+            seniorRepository.save(senior);
         }
+        // 확인요망유지는 신호 수신과 무관하게 상태 유지
 
         SignalLog log = new SignalLog();
         log.setSenior(senior);

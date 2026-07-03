@@ -8,9 +8,14 @@ public final class RegionAccess {
     private RegionAccess() {
     }
 
-    /** MASTER가 아니면서 아직 관할 지역(gu)을 배정받지 못한 담당자인지 여부 */
+    /** MASTER가 아니면서 시/구 모두 미배정인 담당자 (시만 배정된 경우는 유효한 배정으로 간주) */
     public static boolean isUnassigned(CurrentManager manager) {
-        return !manager.isMaster() && manager.gu() == null;
+        return !manager.isMaster() && manager.city() == null && manager.gu() == null;
+    }
+
+    /** 목록 조회 시 사용할 city 필터값. MASTER는 null(전체 조회) */
+    public static String cityFilter(CurrentManager manager) {
+        return manager.isMaster() ? null : manager.city();
     }
 
     /** 목록 조회 시 사용할 gu 필터값. MASTER는 null(전체 조회) */

@@ -22,13 +22,13 @@ public class StatusScheduler {
         this.signalLogRepository = signalLogRepository;
     }
 
-    // 매일 KST 10:00:30 실행
-    @Scheduled(cron = "30 0 10 * * *", zone = "Asia/Seoul")
+    // 매일 KST 11:00:30 실행
+    @Scheduled(cron = "30 0 11 * * *", zone = "Asia/Seoul")
     @Transactional
     public void markNoSignalSeniorsAsDanger() {
         LocalDate today = LocalDate.now();
         LocalDateTime windowStart = LocalDateTime.of(today, LocalTime.of(5, 0));
-        LocalDateTime windowEnd   = LocalDateTime.of(today, LocalTime.of(10, 0));
+        LocalDateTime windowEnd   = LocalDateTime.of(today, LocalTime.of(11, 0));
 
         seniorRepository.updateStatusToConfirmRequired(windowStart, windowEnd);
     }

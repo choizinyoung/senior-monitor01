@@ -63,19 +63,23 @@ public class MonitorController {
     @GetMapping("/api/alerts")
     public ApiResponse<List<AlertResponse>> getAlerts(
             @RequestParam(required = false) String severity,
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) String city,
             @RequestParam(required = false) String gu,
             @RequestParam(required = false) String dong,
             @AuthenticationPrincipal CurrentManager manager) {
-        return ApiResponse.ok(alertService.getDangerAlerts(severity, gu, dong, manager));
+        return ApiResponse.ok(alertService.getDangerAlerts(severity, name, city, gu, dong, manager));
     }
 
     // API 2-1: 확인요망 유지 목록
     @GetMapping("/api/alerts/maintained")
     public ApiResponse<List<AlertResponse>> getMaintainedAlerts(
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) String city,
             @RequestParam(required = false) String gu,
             @RequestParam(required = false) String dong,
             @AuthenticationPrincipal CurrentManager manager) {
-        return ApiResponse.ok(alertService.getMaintainedAlerts(gu, dong, manager));
+        return ApiResponse.ok(alertService.getMaintainedAlerts(name, city, gu, dong, manager));
     }
 
     // API 3: 대상자 전체 목록

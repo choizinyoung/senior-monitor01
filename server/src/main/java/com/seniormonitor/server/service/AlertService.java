@@ -20,36 +20,37 @@ public class AlertService {
         this.seniorRepository = seniorRepository;
     }
 
-    public List<AlertResponse> getDangerAlerts(String severity, String gu, String dong, CurrentManager manager) {
-        return getAlertsByStatus("확인요망", gu, dong, manager);
+    public List<AlertResponse> getDangerAlerts(String severity, String name, String city, String gu, String dong, CurrentManager manager) {
+        return getAlertsByStatus("확인요망", name, city, gu, dong, manager);
     }
 
-    public List<AlertResponse> getMaintainedAlerts(String gu, String dong, CurrentManager manager) {
-        return getAlertsByStatus("확인요망유지", gu, dong, manager);
+    public List<AlertResponse> getMaintainedAlerts(String name, String city, String gu, String dong, CurrentManager manager) {
+        return getAlertsByStatus("확인요망유지", name, city, gu, dong, manager);
     }
 
-    private List<AlertResponse> getAlertsByStatus(String status, String gu, String dong, CurrentManager manager) {
+    private List<AlertResponse> getAlertsByStatus(String status, String name, String city, String gu, String dong, CurrentManager manager) {
         if (RegionAccess.isUnassigned(manager)) {
             return List.of();
         }
 
-        String effectiveGu = manager.isMaster() ? emptyToNull(gu) : manager.gu();
-        String effectiveDong = manager.isMaster()
-                ? emptyToNull(dong)
+        String effectiveCity = manager.isMaster() ? emptyToNull(city) : manager.city();
+        String effectiveGu   = manager.isMaster() ? emptyToNull(gu)
+                : (manager.gu() != null ? manager.gu() : emptyToNull(gu));
+        String effectiveDong = manager.isMaster() ? emptyToNull(dong)
                 : (manager.dong() != null ? manager.dong() : emptyToNull(dong));
 
-        List<Senior> seniors = querySeniorsByStatus(status, effectiveGu, effectiveDong);
-        return seniors.stream().map(AlertResponse::new).toList();
+        return querySeniorsByStatus(status, effectiveCity, effectiveGu, effectiveDong)
+                .stream()
+                .filter(s -> name == null || name.isBlank() || s.getName().contains(name))
+                .map(AlertResponse::new)
+                .toList();
     }
 
-    private List<Senior> querySeniorsByStatus(String status, String gu, String dong) {
-        if (gu != null && dong != null) {
-            return seniorRepository.findByStatusAndGuAndDong(status, gu, dong);
-        } else if (gu != null) {
-            return seniorRepository.findByStatusAndGu(status, gu);
-        } else {
-            return seniorRepository.findByStatus(status);
-        }
+    private List<Senior> querySeniorsByStatus(String status, String city, String gu, String dong) {
+        if (gu != null && dong != null) return seniorRepository.findByStatusAndGuAndDong(status, gu, dong);
+        if (gu != null)                 return seniorRepository.findByStatusAndGu(status, gu);
+        if (city != null)               return seniorRepository.findByStatusAndCity(status, city);
+        return seniorRepository.findByStatus(status);
     }
 
     private static String emptyToNull(String value) {
