@@ -12,7 +12,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
-
 @Service
 @Transactional(readOnly = true)
 public class DashboardService {
@@ -31,16 +30,33 @@ public class DashboardService {
             return new DashboardStatsResponse(0, 0, 0, 0);
         }
 
-        String gu = RegionAccess.guFilter(manager);
+        String gu   = RegionAccess.guFilter(manager);
         String dong = RegionAccess.dongFilter(manager);
 
-        long totalSeniors = seniorRepository.countActiveByRegion(gu, dong);
-        long alertCount   = seniorRepository.countByStatusAndRegion("확인요망", gu, dong);
-
+        long totalSeniors        = countActive(gu, dong);
+        long alertCount          = countByStatus("확인요망", gu, dong);
         LocalDateTime startOfDay = LocalDateTime.of(LocalDate.now(), LocalTime.MIN);
-        long confirmedTodayCount = contactHistoryRepository.countConfirmedToday(startOfDay, gu, dong);
-        long emergencyTodayCount = contactHistoryRepository.countEmergencyToday(startOfDay, gu, dong);
+        long confirmedTodayCount = countContact("확인완료", startOfDay, gu, dong);
+        long emergencyTodayCount = countContact("응급호출", startOfDay, gu, dong);
 
         return new DashboardStatsResponse(totalSeniors, alertCount, confirmedTodayCount, emergencyTodayCount);
+    }
+
+    private long countActive(String gu, String dong) {
+        if (gu != null && dong != null) return seniorRepository.countActiveByGuAndDong(gu, dong);
+        if (gu != null)                 return seniorRepository.countActiveByGu(gu);
+        return seniorRepository.countAllActive();
+    }
+
+    private long countByStatus(String status, String gu, String dong) {
+        if (gu != null && dong != null) return seniorRepository.countByStatusAndGuAndDong(status, gu, dong);
+        if (gu != null)                 return seniorRepository.countByStatusAndGu(status, gu);
+        return seniorRepository.countByStatus(status);
+    }
+
+    private long countContact(String resultStatus, LocalDateTime startOfDay, String gu, String dong) {
+        if (gu != null && dong != null) return contactHistoryRepository.countByResultStatusAndRegionToday(resultStatus, startOfDay, gu, dong);
+        if (gu != null)                 return contactHistoryRepository.countByResultStatusAndGuToday(resultStatus, startOfDay, gu);
+        return contactHistoryRepository.countByResultStatusToday(resultStatus, startOfDay);
     }
 }

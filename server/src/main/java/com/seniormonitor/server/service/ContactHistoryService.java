@@ -44,13 +44,25 @@ public class ContactHistoryService {
         if (RegionAccess.isUnassigned(manager)) {
             return List.of();
         }
-        String gu = RegionAccess.guFilter(manager);
+        String gu   = RegionAccess.guFilter(manager);
         String dong = RegionAccess.dongFilter(manager);
 
         List<ContactHistory> list = resultStatus != null
-                ? contactHistoryRepository.findAllWithSeniorByStatusAndRegion(resultStatus, gu, dong)
-                : contactHistoryRepository.findAllWithSeniorByRegion(gu, dong);
+                ? queryByStatus(resultStatus, gu, dong)
+                : queryAll(gu, dong);
         return list.stream().map(ContactHistoryResponse::new).toList();
+    }
+
+    private List<ContactHistory> queryAll(String gu, String dong) {
+        if (gu != null && dong != null) return contactHistoryRepository.findAllWithSeniorByGuAndDong(gu, dong);
+        if (gu != null)                 return contactHistoryRepository.findAllWithSeniorByGu(gu);
+        return contactHistoryRepository.findAllWithSenior();
+    }
+
+    private List<ContactHistory> queryByStatus(String status, String gu, String dong) {
+        if (gu != null && dong != null) return contactHistoryRepository.findAllWithSeniorByStatusAndGuAndDong(status, gu, dong);
+        if (gu != null)                 return contactHistoryRepository.findAllWithSeniorByStatusAndGu(status, gu);
+        return contactHistoryRepository.findAllWithSeniorByStatus(status);
     }
 
     @Transactional

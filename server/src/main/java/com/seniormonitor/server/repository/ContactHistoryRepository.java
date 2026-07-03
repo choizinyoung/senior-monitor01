@@ -12,43 +12,76 @@ public interface ContactHistoryRepository extends JpaRepository<ContactHistory, 
 
     List<ContactHistory> findBySeniorIdOrderByContactedAtDesc(Long seniorId);
 
-    // gu/dong이 null이면 해당 조건 없이 전체(MASTER), 값이 있으면 해당 지역으로 제한(MANAGER)
+    // ─── 전체 처리내역 목록 (지역 필터) ─────────────────────────────────────────
+
     @Query("""
         SELECT ch FROM ContactHistory ch JOIN FETCH ch.senior s
-        WHERE (:gu IS NULL OR s.gu = :gu)
-          AND (:dong IS NULL OR s.dong = :dong)
         ORDER BY ch.contactedAt DESC
         """)
-    List<ContactHistory> findAllWithSeniorByRegion(@Param("gu") String gu, @Param("dong") String dong);
+    List<ContactHistory> findAllWithSenior();
+
+    @Query("""
+        SELECT ch FROM ContactHistory ch JOIN FETCH ch.senior s
+        WHERE s.gu = :gu
+        ORDER BY ch.contactedAt DESC
+        """)
+    List<ContactHistory> findAllWithSeniorByGu(@Param("gu") String gu);
+
+    @Query("""
+        SELECT ch FROM ContactHistory ch JOIN FETCH ch.senior s
+        WHERE s.gu = :gu AND s.dong = :dong
+        ORDER BY ch.contactedAt DESC
+        """)
+    List<ContactHistory> findAllWithSeniorByGuAndDong(@Param("gu") String gu, @Param("dong") String dong);
 
     @Query("""
         SELECT ch FROM ContactHistory ch JOIN FETCH ch.senior s
         WHERE ch.resultStatus = :status
-          AND (:gu IS NULL OR s.gu = :gu)
-          AND (:dong IS NULL OR s.dong = :dong)
         ORDER BY ch.contactedAt DESC
         """)
-    List<ContactHistory> findAllWithSeniorByStatusAndRegion(@Param("status") String status,
-                                                             @Param("gu") String gu,
-                                                             @Param("dong") String dong);
+    List<ContactHistory> findAllWithSeniorByStatus(@Param("status") String status);
+
+    @Query("""
+        SELECT ch FROM ContactHistory ch JOIN FETCH ch.senior s
+        WHERE ch.resultStatus = :status AND s.gu = :gu
+        ORDER BY ch.contactedAt DESC
+        """)
+    List<ContactHistory> findAllWithSeniorByStatusAndGu(@Param("status") String status, @Param("gu") String gu);
+
+    @Query("""
+        SELECT ch FROM ContactHistory ch JOIN FETCH ch.senior s
+        WHERE ch.resultStatus = :status AND s.gu = :gu AND s.dong = :dong
+        ORDER BY ch.contactedAt DESC
+        """)
+    List<ContactHistory> findAllWithSeniorByStatusAndGuAndDong(@Param("status") String status,
+                                                                @Param("gu") String gu,
+                                                                @Param("dong") String dong);
+
+    // ─── 오늘 처리 카운트 (대시보드) ─────────────────────────────────────────────
 
     @Query("""
         SELECT COUNT(DISTINCT ch.senior.id) FROM ContactHistory ch
-        WHERE ch.resultStatus = '확인완료'
-          AND ch.createdAt >= :startOfDay
-          AND (:gu IS NULL OR ch.senior.gu = :gu)
-          AND (:dong IS NULL OR ch.senior.dong = :dong)
+        WHERE ch.resultStatus = :status AND ch.createdAt >= :startOfDay
         """)
-    long countConfirmedToday(@Param("startOfDay") LocalDateTime startOfDay,
-                              @Param("gu") String gu, @Param("dong") String dong);
+    long countByResultStatusToday(@Param("status") String status,
+                                   @Param("startOfDay") LocalDateTime startOfDay);
 
     @Query("""
         SELECT COUNT(DISTINCT ch.senior.id) FROM ContactHistory ch
-        WHERE ch.resultStatus = '응급호출'
-          AND ch.createdAt >= :startOfDay
-          AND (:gu IS NULL OR ch.senior.gu = :gu)
-          AND (:dong IS NULL OR ch.senior.dong = :dong)
+        WHERE ch.resultStatus = :status AND ch.createdAt >= :startOfDay
+          AND ch.senior.gu = :gu
         """)
-    long countEmergencyToday(@Param("startOfDay") LocalDateTime startOfDay,
-                              @Param("gu") String gu, @Param("dong") String dong);
+    long countByResultStatusAndGuToday(@Param("status") String status,
+                                        @Param("startOfDay") LocalDateTime startOfDay,
+                                        @Param("gu") String gu);
+
+    @Query("""
+        SELECT COUNT(DISTINCT ch.senior.id) FROM ContactHistory ch
+        WHERE ch.resultStatus = :status AND ch.createdAt >= :startOfDay
+          AND ch.senior.gu = :gu AND ch.senior.dong = :dong
+        """)
+    long countByResultStatusAndRegionToday(@Param("status") String status,
+                                            @Param("startOfDay") LocalDateTime startOfDay,
+                                            @Param("gu") String gu,
+                                            @Param("dong") String dong);
 }

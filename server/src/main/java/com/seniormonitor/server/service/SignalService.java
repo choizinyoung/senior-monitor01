@@ -48,8 +48,13 @@ public class SignalService {
         }
         LocalDateTime start = (from != null ? from : LocalDate.now()).atStartOfDay();
         LocalDateTime end   = (to   != null ? to   : LocalDate.now()).atTime(LocalTime.MAX);
-        return signalLogRepository.findByReceivedAtBetweenAndRegionOrderByReceivedAtDesc(
-                start, end, RegionAccess.guFilter(manager), RegionAccess.dongFilter(manager));
+        String gu   = RegionAccess.guFilter(manager);
+        String dong = RegionAccess.dongFilter(manager);
+        if (gu != null && dong != null)
+            return signalLogRepository.findByReceivedAtBetweenAndGuAndDongOrderByReceivedAtDesc(start, end, gu, dong);
+        if (gu != null)
+            return signalLogRepository.findByReceivedAtBetweenAndGuOrderByReceivedAtDesc(start, end, gu);
+        return signalLogRepository.findByReceivedAtBetweenOrderByReceivedAtDesc(start, end);
     }
 
     @Transactional(readOnly = true)
