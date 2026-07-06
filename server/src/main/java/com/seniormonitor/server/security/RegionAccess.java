@@ -33,9 +33,13 @@ public final class RegionAccess {
         if (manager == null || manager.isMaster()) {
             return;
         }
-        boolean guMatch = manager.gu() != null && manager.gu().equals(senior.getGu());
+        if (isUnassigned(manager)) {
+            throw new ForbiddenException("ERR_FORBIDDEN_REGION", "관할 지역 밖의 대상자입니다.");
+        }
+        boolean cityMatch = manager.city() == null || manager.city().equals(senior.getCity());
+        boolean guMatch = manager.gu() == null || manager.gu().equals(senior.getGu());
         boolean dongMatch = manager.dong() == null || manager.dong().equals(senior.getDong());
-        if (!guMatch || !dongMatch) {
+        if (!cityMatch || !guMatch || !dongMatch) {
             throw new ForbiddenException("ERR_FORBIDDEN_REGION", "관할 지역 밖의 대상자입니다.");
         }
     }
