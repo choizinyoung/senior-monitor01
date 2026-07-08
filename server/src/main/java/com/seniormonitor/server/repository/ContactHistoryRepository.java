@@ -12,50 +12,24 @@ public interface ContactHistoryRepository extends JpaRepository<ContactHistory, 
 
     List<ContactHistory> findBySeniorIdOrderByContactedAtDesc(Long seniorId);
 
-    // ─── 전체 처리내역 목록 (지역 필터) ─────────────────────────────────────────
+    // ─── 전체 처리내역 목록 (상태/지역/기간 필터) ─────────────────────────────────
 
     @Query("""
         SELECT ch FROM ContactHistory ch JOIN FETCH ch.senior s
+        WHERE (:status IS NULL OR ch.resultStatus = :status)
+          AND (:city IS NULL OR s.city = :city)
+          AND (:gu IS NULL OR s.gu = :gu)
+          AND (:dong IS NULL OR s.dong = :dong)
+          AND (:from IS NULL OR ch.contactedAt >= :from)
+          AND (:to IS NULL OR ch.contactedAt <= :to)
         ORDER BY ch.contactedAt DESC
         """)
-    List<ContactHistory> findAllWithSenior();
-
-    @Query("""
-        SELECT ch FROM ContactHistory ch JOIN FETCH ch.senior s
-        WHERE s.gu = :gu
-        ORDER BY ch.contactedAt DESC
-        """)
-    List<ContactHistory> findAllWithSeniorByGu(@Param("gu") String gu);
-
-    @Query("""
-        SELECT ch FROM ContactHistory ch JOIN FETCH ch.senior s
-        WHERE s.gu = :gu AND s.dong = :dong
-        ORDER BY ch.contactedAt DESC
-        """)
-    List<ContactHistory> findAllWithSeniorByGuAndDong(@Param("gu") String gu, @Param("dong") String dong);
-
-    @Query("""
-        SELECT ch FROM ContactHistory ch JOIN FETCH ch.senior s
-        WHERE ch.resultStatus = :status
-        ORDER BY ch.contactedAt DESC
-        """)
-    List<ContactHistory> findAllWithSeniorByStatus(@Param("status") String status);
-
-    @Query("""
-        SELECT ch FROM ContactHistory ch JOIN FETCH ch.senior s
-        WHERE ch.resultStatus = :status AND s.gu = :gu
-        ORDER BY ch.contactedAt DESC
-        """)
-    List<ContactHistory> findAllWithSeniorByStatusAndGu(@Param("status") String status, @Param("gu") String gu);
-
-    @Query("""
-        SELECT ch FROM ContactHistory ch JOIN FETCH ch.senior s
-        WHERE ch.resultStatus = :status AND s.gu = :gu AND s.dong = :dong
-        ORDER BY ch.contactedAt DESC
-        """)
-    List<ContactHistory> findAllWithSeniorByStatusAndGuAndDong(@Param("status") String status,
-                                                                @Param("gu") String gu,
-                                                                @Param("dong") String dong);
+    List<ContactHistory> search(@Param("status") String status,
+                                 @Param("city") String city,
+                                 @Param("gu") String gu,
+                                 @Param("dong") String dong,
+                                 @Param("from") LocalDateTime from,
+                                 @Param("to") LocalDateTime to);
 
     // ─── 오늘 처리 카운트 (대시보드) ─────────────────────────────────────────────
 

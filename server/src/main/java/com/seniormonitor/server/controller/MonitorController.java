@@ -122,8 +122,13 @@ public class MonitorController {
     @GetMapping("/api/contacts")
     public ApiResponse<List<ContactHistoryResponse>> getAllContacts(
             @RequestParam(required = false) String resultStatus,
+            @RequestParam(required = false) String city,
+            @RequestParam(required = false) String gu,
+            @RequestParam(required = false) String dong,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to,
             @AuthenticationPrincipal CurrentManager manager) {
-        return ApiResponse.ok(contactHistoryService.getAllHistory(resultStatus, manager));
+        return ApiResponse.ok(contactHistoryService.getAllHistory(resultStatus, city, gu, dong, from, to, manager));
     }
 
     // API 4: 확인 처리 (status 변경 + 연락 이력 기록)

@@ -11,6 +11,7 @@ public class ContactHistoryResponse {
     private final Long id;
     private final Long seniorId;
     private final String seniorName;
+    private final String city;
     private final String gu;
     private final String dong;
     private final String managerName;
@@ -23,6 +24,7 @@ public class ContactHistoryResponse {
         this.id = ch.getId();
         this.seniorId = ch.getSenior().getId();
         this.seniorName = ch.getSenior().getName();
+        this.city = ch.getSenior().getCity();
         this.gu = ch.getSenior().getGu();
         this.dong = ch.getSenior().getDong();
         this.managerName = ch.getManagerName();

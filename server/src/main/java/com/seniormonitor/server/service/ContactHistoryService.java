@@ -13,7 +13,9 @@ import com.seniormonitor.server.security.RegionAccess;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Set;
 
@@ -40,29 +42,32 @@ public class ContactHistoryService {
         return contactHistoryRepository.findBySeniorIdOrderByContactedAtDesc(seniorId);
     }
 
-    public List<ContactHistoryResponse> getAllHistory(String resultStatus, CurrentManager manager) {
+    public List<ContactHistoryResponse> getAllHistory(String resultStatus, String city, String gu, String dong,
+                                                        LocalDate from, LocalDate to, CurrentManager manager) {
         if (RegionAccess.isUnassigned(manager)) {
             return List.of();
         }
-        String gu   = RegionAccess.guFilter(manager);
-        String dong = RegionAccess.dongFilter(manager);
+        // MANAGER는 본인 관할지역을 강제 적용하고, 배정 안 된 하위 단계만 조회 파라미터로 좁힐 수 있다.
+        // MASTER는 조회 파라미터가 없으면 전체 지역을 기본값으로 조회한다.
+        String effectiveCity = manager.isMaster() ? emptyToNull(city) : manager.city();
+        String effectiveGu   = manager.isMaster() ? emptyToNull(gu)
+                : (manager.gu() != null ? manager.gu() : emptyToNull(gu));
+        String effectiveDong = manager.isMaster() ? emptyToNull(dong)
+                : (manager.dong() != null ? manager.dong() : emptyToNull(dong));
 
-        List<ContactHistory> list = resultStatus != null
-                ? queryByStatus(resultStatus, gu, dong)
-                : queryAll(gu, dong);
-        return list.stream().map(ContactHistoryResponse::new).toList();
+        LocalDate fromDate = from != null ? from : LocalDate.now();
+        LocalDate toDate   = to   != null ? to   : LocalDate.now();
+        LocalDateTime start = fromDate.atStartOfDay();
+        LocalDateTime end   = toDate.atTime(LocalTime.MAX);
+
+        return contactHistoryRepository.search(resultStatus, effectiveCity, effectiveGu, effectiveDong, start, end)
+                .stream()
+                .map(ContactHistoryResponse::new)
+                .toList();
     }
 
-    private List<ContactHistory> queryAll(String gu, String dong) {
-        if (gu != null && dong != null) return contactHistoryRepository.findAllWithSeniorByGuAndDong(gu, dong);
-        if (gu != null)                 return contactHistoryRepository.findAllWithSeniorByGu(gu);
-        return contactHistoryRepository.findAllWithSenior();
-    }
-
-    private List<ContactHistory> queryByStatus(String status, String gu, String dong) {
-        if (gu != null && dong != null) return contactHistoryRepository.findAllWithSeniorByStatusAndGuAndDong(status, gu, dong);
-        if (gu != null)                 return contactHistoryRepository.findAllWithSeniorByStatusAndGu(status, gu);
-        return contactHistoryRepository.findAllWithSeniorByStatus(status);
+    private static String emptyToNull(String value) {
+        return (value == null || value.isEmpty()) ? null : value;
     }
 
     @Transactional
