@@ -60,10 +60,24 @@ public class ContactHistoryService {
         LocalDateTime start = fromDate.atStartOfDay();
         LocalDateTime end   = toDate.atTime(LocalTime.MAX);
 
-        return contactHistoryRepository.search(resultStatus, effectiveCity, effectiveGu, effectiveDong, start, end)
+        return queryHistory(resultStatus, effectiveCity, effectiveGu, effectiveDong, start, end)
                 .stream()
                 .map(ContactHistoryResponse::new)
                 .toList();
+    }
+
+    private List<ContactHistory> queryHistory(String status, String city, String gu, String dong,
+                                               LocalDateTime start, LocalDateTime end) {
+        if (status != null) {
+            if (gu != null && dong != null) return contactHistoryRepository.findAllByStatusAndGuAndDongAndDateRange(status, gu, dong, start, end);
+            if (gu != null)                 return contactHistoryRepository.findAllByStatusAndGuAndDateRange(status, gu, start, end);
+            if (city != null)               return contactHistoryRepository.findAllByStatusAndCityAndDateRange(status, city, start, end);
+            return contactHistoryRepository.findAllByStatusAndDateRange(status, start, end);
+        }
+        if (gu != null && dong != null) return contactHistoryRepository.findAllByGuAndDongAndDateRange(gu, dong, start, end);
+        if (gu != null)                 return contactHistoryRepository.findAllByGuAndDateRange(gu, start, end);
+        if (city != null)               return contactHistoryRepository.findAllByCityAndDateRange(city, start, end);
+        return contactHistoryRepository.findAllByDateRange(start, end);
     }
 
     private static String emptyToNull(String value) {
